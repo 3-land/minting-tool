@@ -21,9 +21,9 @@
           style="height: 70px"
         />
       </div>
-      <div class="input-container">
+      <div class="general-royalty-container">
         <label>Secondary royalty %</label>
-        <span
+        <span style="font-size: 14px; margin-top: 12px"
           >The percentage of future sales that will sent to the creators</span
         >
         <InputBox class="input-item" type="" />
@@ -45,7 +45,7 @@
             style="width: 45%"
           />
         </div>
-        <ButtonBox label="Add traits" />
+        <ButtonBox class="action-button" label="Add traits" />
       </div>
       <div class="section-line" />
     </div>
@@ -56,13 +56,13 @@
         <span>Royalty Percentage</span>
       </div>
       <div class="royalty-container">
-        <InputBox class="input-item" style="width: 40%" />
-        <InputBox class="input-item" type="" style="width: 40%" />
+        <InputBox placeholder="Wallet" class="input-item" style="width: 45%" />
+        <InputBox class="input-item" type="" style="width: 45%" />
       </div>
-      <ButtonBox label="Add creator" />
+      <ButtonBox class="action-button" label="Add creator" />
     </div>
     <div class="footer-container">
-      <ButtonBox label="Next" />
+      <ButtonBox class="next-button-container" label="Next" />
     </div>
   </body>
 </template>
@@ -84,10 +84,12 @@ header {
   flex-direction: column;
   padding: 24px 24px 0 24px;
   gap: 16px;
+  font-family: "Inter", sans-serif;
 }
 body {
   display: flex !important;
   flex-wrap: wrap;
+  font-family: "Inter", sans-serif;
 }
 .section-line {
   border-bottom: 1px solid #000000;
@@ -96,6 +98,12 @@ body {
 }
 .details-container {
   padding: 24px 24px 0px 24px;
+}
+.general-royalty-container {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
 }
 .add-traits-title {
   display: flex;
@@ -123,5 +131,20 @@ body {
 .royalty-container {
   display: flex;
   justify-content: space-between;
+}
+.action-button {
+  margin-top: 24px;
+  width: 100px;
+  height: 35px;
+}
+.footer-container {
+  margin-top: 24px;
+  border-top: 1px solid lightgray;
+  width: 100%;
+  padding: 24px;
+}
+.next-button-container {
+  height: 35px;
+  border-radius: 16px;
 }
 </style>
