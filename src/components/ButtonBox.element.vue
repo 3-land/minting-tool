@@ -29,5 +29,6 @@ export default {
   align-items: center;
   height: 35%;
   border-radius: 4px;
+  cursor: pointer;
 }
 </style>

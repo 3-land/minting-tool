@@ -1,6 +1,6 @@
 <template>
   <div class="toggle-switch">
-    <input type="checkbox" id="toggle" v-model="state" />
+    <input type="checkbox" id="toggle" :checked="state" @change="updateValue" />
     <label for="toggle" :class="{ checked: state }"></label>
   </div>
 </template>
@@ -9,12 +9,18 @@
 export default {
   data() {
     return {
-      state: this.initialState,
+      state: this.value,
     };
   },
   props: {
-    initialState: {
+    value: {
       default: false,
+    },
+  },
+  methods: {
+    updateValue() {
+      this.state = !this.state;
+      this.$emit("input", this.state);
     },
   },
 };

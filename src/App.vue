@@ -1,8 +1,10 @@
 <template>
   <header>
-    <span style="font-size: 20px">Time to mint</span>
+    <span style="font-size: 20px; color: rgba(30, 30, 30, 0.5)"
+      >Time to mint</span
+    >
     <span style="font-size: 40px">What would you like to create?</span>
-    <span style="font-size: 14px">Start Creating your cNFT Editions</span>
+    <span style="font-size: 14px">Create a cNFT</span>
     <div class="section-line" />
   </header>
   <body>
@@ -11,11 +13,16 @@
       <FileUploader />
       <div class="input-container">
         <label>Name of your NFT<span style="color: #f23d4f">*</span></label>
-        <InputBox class="input-item" placeholder="Artwork title" />
+        <InputBox
+          @input="handleName"
+          class="input-item"
+          placeholder="Artwork title"
+        />
       </div>
       <div class="input-container">
         <label>Description<span style="color: #f23d4f">*</span></label>
         <InputBox
+          @input="handleDescription"
           class="input-item"
           placeholder="Description for your art"
           style="height: 70px"
@@ -24,28 +31,50 @@
       <div class="general-royalty-container">
         <label>Secondary royalty %</label>
         <span style="font-size: 14px; margin-top: 12px"
-          >The percentage of future sales that will sent to the creators</span
+          >The percentage of future sales that will be sent to the
+          creators</span
         >
-        <InputBox class="input-item" type="" />
+        <InputBox
+          class="input-item"
+          type="number"
+          style="width: 50%"
+          :defaultValue="defaultPercentage"
+          :step="5"
+          @input="handleRoyalties"
+        />
       </div>
       <div class="input-container">
         <div class="add-traits-title">
           <span>Add traits</span>
-          <Toggle :initialState="true" />
+          <Toggle :value="showTraits" @input="updateShowTraits" />
         </div>
-        <div class="traits-container">
-          <InputBox
-            class="input-item"
-            placeholder="e.g. Size"
-            style="width: 45%"
-          />
-          <InputBox
-            class="input-item"
-            placeholder="e.g. Medium"
-            style="width: 45%"
+        <div v-if="showTraits">
+          <div
+            class="traits-container"
+            v-for="(item, key) in getTraits"
+            :key="key"
+          >
+            <InputBox
+              :value="item.name"
+              class="input-item"
+              placeholder="e.g. Size"
+              style="width: 45%"
+              @update:value="handleTraitValue($event, key)"
+            />
+            <InputBox
+              :value="item.value"
+              class="input-item"
+              placeholder="e.g. Medium"
+              style="width: 45%"
+              @input="handleTraitValue($event, key)"
+            />
+          </div>
+          <ButtonBox
+            class="action-button"
+            label="Add traits"
+            @click="addTrait()"
           />
         </div>
-        <ButtonBox class="action-button" label="Add traits" />
       </div>
       <div class="section-line" />
     </div>
@@ -57,7 +86,13 @@
       </div>
       <div class="royalty-container">
         <InputBox placeholder="Wallet" class="input-item" style="width: 45%" />
-        <InputBox class="input-item" type="" style="width: 45%" />
+        <InputBox
+          class="input-item"
+          type="number"
+          :defaultValue="defaultPercentage"
+          :step="5"
+          style="width: 45%"
+        />
       </div>
       <ButtonBox class="action-button" label="Add creator" />
     </div>
@@ -65,16 +100,68 @@
       <ButtonBox class="next-button-container" label="Next" />
     </div>
   </body>
+  <div>
+    {{ value }}
+  </div>
 </template>
 <script>
-// import { InputBox } from "./components/InputBox.element.vue";
-// import { ButtonBox } from "./components/ButtonBox.element.vue";
-// import { FileUploader } from "./components/FileUploader.element.vue";
 export default {
   mixins: [],
+  data() {
+    return {
+      showTraits: true,
+      defaultPercentage: 5,
+      value: {
+        name: "",
+        description: "",
+        royalties: 5,
+        traits: [],
+        wallets: [],
+      },
+    };
+  },
   props: {},
-  computed: {},
-  methods: {},
+  computed: {
+    getTraits() {
+      if (this.value?.traits?.length > 0) {
+        return this.value?.traits;
+      } else {
+        this.value?.traits?.push({ name: "", value: "" });
+        return [{ name: "", value: "" }];
+      }
+    },
+  },
+  methods: {
+    updateShowTraits(value) {
+      if (typeof value === "boolean") {
+        this.showTraits = value;
+      }
+    },
+    handleName(event) {
+      this.value.name = event?.target?.value;
+    },
+    handleDescription(event) {
+      this.value.description = event?.target?.value;
+    },
+    handleRoyalties(event) {
+      if (event.target) {
+        this.value.royalties = Number(event?.target?.value);
+      } else {
+        this.value.royalties = event;
+      }
+    },
+    handleTraitName(event, key) {
+      console.log("traitname");
+      console.log(event);
+      this.value.traits[key].name = event?.target?.value;
+    },
+    handleTraitValue(event, key) {
+      this.value.traits[key].value = event?.target?.value;
+    },
+    addTrait(name, value) {
+      this.value?.traits?.push({ name: "", value: "" });
+    },
+  },
 };
 </script>
 
@@ -108,12 +195,14 @@ body {
 .add-traits-title {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 .input-container {
   margin-bottom: 16px;
 }
 .input-item {
   margin-top: 12px;
+  height: 41px;
 }
 .collaboration-container {
   padding: 24px;
