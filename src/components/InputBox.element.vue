@@ -5,7 +5,12 @@
       :placeholder="placeholder || ''"
       :value="value"
       @input="updateValue"
-      style="width: 100%; height: 100%"
+      style="
+        width: 100%;
+        height: 100%;
+        border: 1px solid rgba(30, 30, 30, 0.5);
+        border-radius: 4px;
+      "
     />
     <div class="number-input" v-else>
       <div class="input-container">
@@ -14,7 +19,13 @@
           :min="min"
           :max="max"
           v-model="data_value"
-          style="text-align: center; width: 100%; height: 37px"
+          style="
+            text-align: center;
+            width: 100%;
+            height: 37px;
+            border: 1px solid rgba(30, 30, 30, 0.5);
+            border-radius: 4px;
+          "
           @input="updateValue"
         />
         <span class="percent-sign">%</span>
@@ -51,18 +62,16 @@ export default {
     increment() {
       if (this.data_value < 100) {
         this.data_value += this.N;
-        this.$emit("input", this.data_value);
+        this.$emit("update:value", this.data_value);
       }
     },
     decrement() {
       if (this.data_value - this.N >= 0) {
         this.data_value -= this.N;
-        this.$emit("input", this.data_value);
+        this.$emit("update:value", this.data_value);
       }
     },
     updateValue($event) {
-      console.log("updatevalue");
-      console.log($event.target.value);
       this.$emit("update:value", $event.target.value);
     },
   },
@@ -73,6 +82,17 @@ export default {
 .input-main-container {
   width: 100%;
   border-color: rgba(30, 30, 30, 1);
+}
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
 }
 .number-input {
   display: flex;

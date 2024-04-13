@@ -14,7 +14,7 @@
       <div class="input-container">
         <label>Name of your NFT<span style="color: #f23d4f">*</span></label>
         <InputBox
-          @input="handleName"
+          v-model:value="value.name"
           class="input-item"
           placeholder="Artwork title"
         />
@@ -22,7 +22,7 @@
       <div class="input-container">
         <label>Description<span style="color: #f23d4f">*</span></label>
         <InputBox
-          @input="handleDescription"
+          v-model:value="value.description"
           class="input-item"
           placeholder="Description for your art"
           style="height: 70px"
@@ -37,10 +37,10 @@
         <InputBox
           class="input-item"
           type="number"
-          style="width: 50%"
+          style="width: 45%"
           :defaultValue="defaultPercentage"
           :step="5"
-          @input="handleRoyalties"
+          v-model:value="value.royalties"
         />
       </div>
       <div class="input-container">
@@ -51,23 +51,39 @@
         <div v-if="showTraits">
           <div
             class="traits-container"
-            v-for="(item, key) in getTraits"
-            :key="key"
+            v-for="(item, index) in getTraits"
+            :key="index"
           >
             <InputBox
               :value="item.name"
               class="input-item"
               placeholder="e.g. Size"
               style="width: 45%"
-              @update:value="handleTraitValue($event, key)"
+              @update:value="handleTrait($event, index, 'name')"
             />
-            <InputBox
-              :value="item.value"
-              class="input-item"
-              placeholder="e.g. Medium"
-              style="width: 45%"
-              @input="handleTraitValue($event, key)"
-            />
+            <div
+              style="display: flex; width: 45%; justify-content: space-between"
+            >
+              <InputBox
+                :value="item.value"
+                class="input-item"
+                :style="{ width: index > 0 ? '65%' : '100%' }"
+                placeholder="e.g. Medium"
+                @update:value="handleTrait($event, index, 'value')"
+              />
+              <ButtonBox
+                v-if="index > 0"
+                icon="/src/assets/royaltiesDeleteButton.svg"
+                color="rgba(30, 30, 30, 0.1)"
+                @click="removeTrait(key)"
+                style="
+                  margin-top: 12px;
+                  height: 43px;
+                  width: 25%;
+                  border: 1px solid rgba(30, 30, 30, 0.5);
+                "
+              />
+            </div>
           </div>
           <ButtonBox
             class="action-button"
@@ -84,17 +100,47 @@
         <span>Wallet</span>
         <span>Royalty Percentage</span>
       </div>
-      <div class="royalty-container">
-        <InputBox placeholder="Wallet" class="input-item" style="width: 45%" />
+      <div
+        class="traits-container"
+        v-for="(item, index) in getWallets"
+        :key="index"
+      >
         <InputBox
+          :value="item.address"
           class="input-item"
-          type="number"
-          :defaultValue="defaultPercentage"
-          :step="5"
+          placeholder="Wallet Address"
           style="width: 45%"
+          @update:value="handleCreator($event, index, 'address')"
         />
+        <div style="display: flex; width: 45%; justify-content: space-between">
+          <InputBox
+            class="input-item"
+            type="number"
+            :style="{ width: index > 0 ? '65%' : '100%' }"
+            :defaultValue="defaultPercentage"
+            :step="5"
+            :value="value?.wallets[index]?.royalty"
+            @update:value="handleCreator($event, index, 'royalty')"
+          />
+          <ButtonBox
+            v-if="index > 0"
+            icon="/src/assets/royaltiesDeleteButton.svg"
+            color="rgba(30, 30, 30, 0.1)"
+            @click="removeCreator(key)"
+            style="
+              margin-top: 12px;
+              height: 43px;
+              width: 25%;
+              border: 1px solid rgba(30, 30, 30, 0.5);
+            "
+          />
+        </div>
       </div>
-      <ButtonBox class="action-button" label="Add creator" />
+      <ButtonBox
+        class="action-button"
+        label="Add creator"
+        @click="addCreator()"
+      />
     </div>
     <div class="footer-container">
       <ButtonBox class="next-button-container" label="Next" />
@@ -130,6 +176,14 @@ export default {
         return [{ name: "", value: "" }];
       }
     },
+    getWallets() {
+      if (this.value?.wallets?.length > 0) {
+        return this.value?.wallets;
+      } else {
+        this.value?.wallets?.push({ address: "", royalty: "" });
+        return [{ address: "", royalty: "" }];
+      }
+    },
   },
   methods: {
     updateShowTraits(value) {
@@ -150,16 +204,23 @@ export default {
         this.value.royalties = event;
       }
     },
-    handleTraitName(event, key) {
-      console.log("traitname");
-      console.log(event);
-      this.value.traits[key].name = event?.target?.value;
-    },
-    handleTraitValue(event, key) {
-      this.value.traits[key].value = event?.target?.value;
+    handleTrait(event, index, key) {
+      this.value.traits[index][key] = event;
     },
     addTrait(name, value) {
       this.value?.traits?.push({ name: "", value: "" });
+    },
+    removeTrait(position) {
+      this.value?.traits?.splice(position, 1);
+    },
+    addCreator(address, royalty) {
+      this.value?.wallets?.push({ address: "", royalty: "" });
+    },
+    removeCreator(position) {
+      this.value?.wallets?.splice(position, 1);
+    },
+    handleCreator(event, index, key) {
+      this.value.wallets[index][key] = event;
     },
   },
 };
