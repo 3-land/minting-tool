@@ -15,12 +15,16 @@
       <video v-if="fileType == 'video'" :src="fileSrc" ref="video" controls />
       <audio v-if="fileType == 'audio'" :src="fileSrc" ref="audio" controls />
       <TresCanvas v-if="fileType == '3d'" clear-color="#82DBC5">
-        <TresPerspectiveCamera />
-        <TresGLTFLoader :src="fileSrc" @loaded="onLoaded">
-          <template #default="{ scene }">
-            <TresPrimitive :object3d="scene" />
-          </template>
-        </TresGLTFLoader>
+        <TresPerspectiveCamera :args="[45, 120, 0.1, 1000]" />
+        <OrbitControls />
+        <Suspense>
+          <GLTFModel :path="fileSrc" draco />
+        </Suspense>
+        <TresDirectionalLight
+          :position="[-4, 8, 4]"
+          :intensity="1.5"
+          cast-shadow
+        />
       </TresCanvas>
     </div>
     <input
@@ -53,11 +57,8 @@
 </template>
 
 <script>
-import {
-  TresCanvas,
-  TresPerspectiveCamera,
-  TresGLTFLoader,
-} from "@tresjs/core";
+import { OrbitControls } from "@tresjs/cientos";
+
 export default {
   data() {
     return {
