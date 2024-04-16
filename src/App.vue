@@ -10,7 +10,7 @@
   <body>
     <div class="details-container">
       <span style="font-size: 24px">Details</span>
-      <FileUploader />
+      <FileUploader v-model:value="value.file" />
       <div class="input-container">
         <label>Name of your NFT<span style="color: #f23d4f">*</span></label>
         <InputBox
@@ -164,7 +164,6 @@ export default {
       defaultPercentage: 5,
       value: {
         file: null,
-        cover_file: null,
         name: "",
         description: "",
         royalties: 5,

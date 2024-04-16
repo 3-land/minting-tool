@@ -67,6 +67,9 @@ export default {
       fileType: null,
     };
   },
+  props: {
+    value: { default: null },
+  },
   methods: {
     openFileExplorer(cover) {
       if (!cover) {
@@ -84,9 +87,17 @@ export default {
         this.checkFileType(file);
         this.fileSrc = URL.createObjectURL(file);
         this.coverFileSrc = "";
+        this.$emit("update:value", {
+          file: this.fileSrc,
+          cover: this.coverFileSrc,
+        });
       }
       if (file && cover) {
         this.coverFileSrc = URL.createObjectURL(file);
+        this.$emit("update:value", {
+          file: this.fileSrc,
+          cover: this.coverFileSrc,
+        });
       }
     },
     onDrop(e, cover) {
@@ -96,9 +107,17 @@ export default {
         this.checkFileType(file);
         this.fileSrc = URL.createObjectURL(file);
         this.coverFileSrc = "";
+        this.$emit("update:value", {
+          file: this.fileSrc,
+          cover: this.coverFileSrc,
+        });
       }
       if (file && cover) {
         this.coverFileSrc = URL.createObjectURL(file);
+        this.$emit("update:value", {
+          file: this.fileSrc,
+          cover: this.coverFileSrc,
+        });
       }
     },
     checkFileType(file) {
