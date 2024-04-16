@@ -30,7 +30,12 @@
       </div>
       <div class="general-royalty-container">
         <label>Secondary royalty %</label>
-        <span style="font-size: 14px; margin-top: 12px"
+        <span
+          style="
+            font-size: 14px;
+            margin-top: 12px;
+            color: rgba(30, 30, 30, 0.5);
+          "
           >The percentage of future sales that will be sent to the
           creators</span
         >
@@ -75,7 +80,7 @@
                 v-if="index > 0"
                 icon="/src/assets/royaltiesDeleteButton.svg"
                 color="rgba(30, 30, 30, 0.1)"
-                @click="removeTrait(key)"
+                @click="removeTrait(index)"
                 style="
                   margin-top: 12px;
                   height: 43px;
@@ -126,7 +131,7 @@
             v-if="index > 0"
             icon="/src/assets/royaltiesDeleteButton.svg"
             color="rgba(30, 30, 30, 0.1)"
-            @click="removeCreator(key)"
+            @click="removeCreator(index)"
             style="
               margin-top: 12px;
               height: 43px;
@@ -158,6 +163,8 @@ export default {
       showTraits: true,
       defaultPercentage: 5,
       value: {
+        file: null,
+        cover_file: null,
         name: "",
         description: "",
         royalties: 5,
@@ -189,6 +196,7 @@ export default {
     updateShowTraits(value) {
       if (typeof value === "boolean") {
         this.showTraits = value;
+        this.value.traits = [];
       }
     },
     handleName(event) {

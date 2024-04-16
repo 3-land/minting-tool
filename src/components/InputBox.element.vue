@@ -10,6 +10,7 @@
         height: 100%;
         border: 1px solid rgba(30, 30, 30, 0.5);
         border-radius: 4px;
+        background-color: rgba(30, 30, 30, 0.1);
       "
     />
     <div class="number-input" v-else>
@@ -22,8 +23,9 @@
           style="
             text-align: center;
             width: 100%;
-            height: 37px;
+            height: 39px;
             border: 1px solid rgba(30, 30, 30, 0.5);
+            background-color: rgba(30, 30, 30, 0.1);
             border-radius: 4px;
           "
           @input="updateValue"
@@ -103,7 +105,7 @@ input[type="number"] {
 }
 .input-container .percent-sign {
   position: absolute;
-  right: 30%;
+  left: 65%;
   top: 50%;
   transform: translateY(-50%);
 }
