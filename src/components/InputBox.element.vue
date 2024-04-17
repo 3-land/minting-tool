@@ -1,5 +1,8 @@
 <template>
-  <div class="input-main-container">
+  <div
+    class="input-main-container"
+    :style="{ paddingBottom: error ? '12px' : '' }"
+  >
     <input
       v-if="input_type != 'number'"
       :placeholder="placeholder || ''"
@@ -8,12 +11,20 @@
       style="
         width: 100%;
         height: 100%;
-        border: 1px solid rgba(30, 30, 30, 0.5);
         border-radius: 4px;
         background-color: rgba(30, 30, 30, 0.1);
       "
+      :style="{
+        border:
+          error && input_type != 'number'
+            ? '2px solid red'
+            : '1px solid rgba(30, 30, 30, 0.5)',
+      }"
     />
-    <div class="number-input" v-else>
+    <span v-if="error && input_type != 'number'" style="color: red"
+      >Missing Field</span
+    >
+    <div class="number-input" v-if="input_type == 'number'">
       <div class="input-container">
         <input
           type="number"
@@ -28,6 +39,12 @@
             background-color: rgba(30, 30, 30, 0.1);
             border-radius: 4px;
           "
+          :style="{
+            border:
+              error && input_type == 'number'
+                ? '2px solid red'
+                : '1px solid rgba(30, 30, 30, 0.5)',
+          }"
           @input="updateValue"
         />
         <span class="percent-sign">%</span>
@@ -58,6 +75,7 @@ export default {
     min: { default: null },
     max: { default: null },
     step: { default: null },
+    error: { default: null },
   },
   computed: {},
   methods: {

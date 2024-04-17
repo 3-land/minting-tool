@@ -82,7 +82,7 @@ export default {
     },
     onFileChange(e, cover) {
       const file = e.target.files[0];
-      console.log(file);
+      // console.log(file);
       if (file && !cover) {
         this.checkFileType(file);
         this.fileSrc = URL.createObjectURL(file);

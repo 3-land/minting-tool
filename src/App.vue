@@ -17,6 +17,8 @@
           v-model:value="value.name"
           class="input-item"
           placeholder="Artwork title"
+          @update:value="inputValue($event, 'name')"
+          :error="missing.name ? false : true"
         />
       </div>
       <div class="input-container">
@@ -26,6 +28,8 @@
           class="input-item"
           placeholder="Description for your art"
           style="height: 70px"
+          @update:value="inputValue($event, 'description')"
+          :error="missing.description ? false : true"
         />
       </div>
       <div class="general-royalty-container">
@@ -65,6 +69,7 @@
               placeholder="e.g. Size"
               style="width: 45%"
               @update:value="handleTrait($event, index, 'name')"
+              :error="missing.traits[index]?.name ? false : true"
             />
             <div
               style="display: flex; width: 45%; justify-content: space-between"
@@ -75,6 +80,7 @@
                 :style="{ width: index > 0 ? '65%' : '100%' }"
                 placeholder="e.g. Medium"
                 @update:value="handleTrait($event, index, 'value')"
+                :error="missing.traits[index]?.value ? false : true"
               />
               <ButtonBox
                 v-if="index > 0"
@@ -116,16 +122,18 @@
           placeholder="Wallet Address"
           style="width: 45%"
           @update:value="handleCreator($event, index, 'address')"
+          :error="missing.wallets[index]?.address ? false : true"
         />
         <div style="display: flex; width: 45%; justify-content: space-between">
           <InputBox
             class="input-item"
             type="number"
             :style="{ width: index > 0 ? '65%' : '100%' }"
-            :defaultValue="defaultPercentage"
+            :defaultValue="index == 0 ? 100 : defaultPercentage"
             :step="5"
             :value="value?.wallets[index]?.royalty"
             @update:value="handleCreator($event, index, 'royalty')"
+            :error="calculateTotalRoyalty"
           />
           <ButtonBox
             v-if="index > 0"
@@ -141,6 +149,9 @@
           />
         </div>
       </div>
+      <h5 v-if="calculateTotalRoyalty" style="color: red; margin-top: 12px">
+        Total royalties should add to 100%
+      </h5>
       <ButtonBox
         class="action-button"
         label="Add creator"
@@ -148,11 +159,15 @@
       />
     </div>
     <div class="footer-container">
-      <ButtonBox class="next-button-container" label="Next" />
+      <ButtonBox
+        class="next-button-container"
+        label="Next"
+        @click="goToReview()"
+      />
     </div>
   </body>
   <div>
-    {{ value }}
+    {{ value.wallets }}
   </div>
 </template>
 <script>
@@ -164,11 +179,19 @@ export default {
       defaultPercentage: 5,
       value: {
         file: null,
-        name: "",
-        description: "",
+        name: null,
+        description: null,
         royalties: 5,
         traits: [],
         wallets: [],
+      },
+      missing: {
+        file: "empty",
+        name: "empty",
+        description: "empty",
+        royalties: "empty",
+        traits: [{ name: "empty", value: "empty" }],
+        wallets: [{ address: "empty", royalty: "empty" }],
       },
     };
   },
@@ -186,12 +209,24 @@ export default {
       if (this.value?.wallets?.length > 0) {
         return this.value?.wallets;
       } else {
-        this.value?.wallets?.push({ address: "", royalty: "" });
-        return [{ address: "", royalty: "" }];
+        this.value?.wallets?.push({ address: "", royalty: "100" });
+        return [{ address: "", royalty: "100" }];
       }
+    },
+    calculateTotalRoyalty() {
+      const total_royalties = this.value?.wallets.reduce(
+        (obj, value) => obj + Number(value.royalty),
+        0
+      );
+      console.log(total_royalties);
+      console.log("****");
+      return total_royalties == 100 ? false : true;
     },
   },
   methods: {
+    inputValue(e, type) {
+      this.missing[type] = e;
+    },
     updateShowTraits(value) {
       if (typeof value === "boolean") {
         this.showTraits = value;
@@ -213,21 +248,74 @@ export default {
     },
     handleTrait(event, index, key) {
       this.value.traits[index][key] = event;
+      this.missing.traits[index][key] = event;
     },
     addTrait(name, value) {
       this.value?.traits?.push({ name: "", value: "" });
+      this.missing?.traits?.push({ name: "empty", value: "empty" });
     },
     removeTrait(position) {
       this.value?.traits?.splice(position, 1);
+      this.missing?.traits?.splice(position, 1);
     },
     addCreator(address, royalty) {
-      this.value?.wallets?.push({ address: "", royalty: "" });
+      this.value?.wallets?.push({ address: "", royalty: "5" });
+      this.missing?.wallets?.push({ address: "empty", royalty: "empty" });
+      this.adjustRoyalties();
     },
     removeCreator(position) {
       this.value?.wallets?.splice(position, 1);
+      this.missing?.wallets?.splice(position, 1);
     },
     handleCreator(event, index, key) {
       this.value.wallets[index][key] = event;
+      this.missing.wallets[index][key] = event;
+      if (key === "royalty") {
+        this.adjustRoyalties();
+      }
+    },
+    adjustRoyalties() {
+      const totalCreators = this.value.wallets.length;
+      let remainingRoyalty = 100;
+
+      this.value.wallets.forEach((wallet, index) => {
+        if (index === totalCreators - 1) {
+          wallet.royalty = remainingRoyalty;
+        } else {
+          wallet.royalty = Math.ceil(
+            remainingRoyalty / (totalCreators - index)
+          );
+          remainingRoyalty -= wallet.royalty;
+        }
+      });
+    },
+    goToReview() {
+      //Checks if there is any missing fields
+      for (const _value in this.value) {
+        if (_value == "traits") {
+          for (const _key in this.value.traits) {
+            if (!this.value.traits[_key].name) {
+              this.missing.traits[_key].name = "";
+            }
+            if (!this.value.traits[_key].value) {
+              this.missing.traits[_key].value = "";
+            }
+          }
+        }
+        if (_value == "wallets") {
+          for (const _key in this.value.wallets) {
+            if (!this.value.wallets[_key].address) {
+              this.missing.wallets[_key].address = "";
+            }
+            if (!this.value.wallets[_key].royalty) {
+              this.missing.wallets[_key].royalty = "";
+            }
+          }
+        }
+        if (!this.value[_value]) {
+          this.missing[_value] = "";
+        }
+      }
     },
   },
 };
