@@ -129,9 +129,9 @@
             class="input-item"
             type="number"
             :style="{ width: index > 0 ? '65%' : '100%' }"
-            :defaultValue="index == 0 ? 100 : defaultPercentage"
+            :defaultValue="item.royalty"
             :step="5"
-            :value="value?.wallets[index]?.royalty"
+            :value="item.royalty"
             @update:value="handleCreator($event, index, 'royalty')"
             :error="calculateTotalRoyalty"
           />
@@ -162,6 +162,7 @@
       <ButtonBox
         class="next-button-container"
         label="Next"
+        :disabled="isReady"
         @click="goToReview()"
       />
     </div>
@@ -177,6 +178,7 @@ export default {
     return {
       showTraits: true,
       defaultPercentage: 5,
+      isReady: null,
       value: {
         file: null,
         name: null,
@@ -197,6 +199,29 @@ export default {
   },
   props: {},
   computed: {
+    // isReady() {
+    //   if (this.value.file == null) {
+    //     return false;
+    //   }
+    //   if (this.value.name == null) {
+    //     return false;
+    //   }
+    //   if (this.value.description == null) {
+    //     return false;
+    //   }
+    //   for (const item in this.value.traits) {
+    //     if (
+    //       this.value.traits[item].name == "" ||
+    //       this.value.traits[item].value == ""
+    //     ) {
+    //       return false;
+    //     }
+    //   }
+    //   if (!this.calculateTotalRoyalty) {
+    //     return false;
+    //   }
+    //   return true;
+    // },
     getTraits() {
       if (this.value?.traits?.length > 0) {
         return this.value?.traits;
@@ -209,8 +234,8 @@ export default {
       if (this.value?.wallets?.length > 0) {
         return this.value?.wallets;
       } else {
-        this.value?.wallets?.push({ address: "", royalty: "100" });
-        return [{ address: "", royalty: "100" }];
+        this.value?.wallets?.push({ address: "", royalty: 100 });
+        return [{ address: "", royalty: 100 }];
       }
     },
     calculateTotalRoyalty() {
@@ -218,8 +243,6 @@ export default {
         (obj, value) => obj + Number(value.royalty),
         0
       );
-      console.log(total_royalties);
-      console.log("****");
       return total_royalties == 100 ? false : true;
     },
   },
@@ -259,7 +282,7 @@ export default {
       this.missing?.traits?.splice(position, 1);
     },
     addCreator(address, royalty) {
-      this.value?.wallets?.push({ address: "", royalty: "5" });
+      this.value?.wallets?.push({ address: "", royalty: 5 });
       this.missing?.wallets?.push({ address: "empty", royalty: "empty" });
       this.adjustRoyalties();
     },
@@ -270,23 +293,23 @@ export default {
     handleCreator(event, index, key) {
       this.value.wallets[index][key] = event;
       this.missing.wallets[index][key] = event;
-      if (key === "royalty") {
-        this.adjustRoyalties();
-      }
+      // if (key === "royalty") {
+      //   this.adjustRoyalties();
+      // }
     },
     adjustRoyalties() {
       const totalCreators = this.value.wallets.length;
       let remainingRoyalty = 100;
 
-      this.value.wallets.forEach((wallet, index) => {
+      this.value.wallets = this.value.wallets.map((wallet, index) => {
+        let royalty;
         if (index === totalCreators - 1) {
-          wallet.royalty = remainingRoyalty;
+          royalty = remainingRoyalty;
         } else {
-          wallet.royalty = Math.ceil(
-            remainingRoyalty / (totalCreators - index)
-          );
-          remainingRoyalty -= wallet.royalty;
+          royalty = Math.ceil(remainingRoyalty / (totalCreators - index));
+          remainingRoyalty -= royalty;
         }
+        return { ...wallet, royalty };
       });
     },
     goToReview() {
@@ -315,6 +338,7 @@ export default {
         if (!this.value[_value]) {
           this.missing[_value] = "";
         }
+        this.$router.push({ name: "Review", query: { data: this.value } });
       }
     },
   },

@@ -1,7 +1,11 @@
 <template>
   <div
     class="main-button-container"
-    :style="{ backgroundColor: color ? color : 'rgba(30, 30, 30, 1)' }"
+    :style="{
+      backgroundColor: color ? color : 'rgba(30, 30, 30, 1)',
+      pointerEvents: disabled ? 'none' : '',
+      opacity: disabled ? '0.55' : '',
+    }"
   >
     <span v-if="getLabel" v-html="getLabel" />
     <img v-if="icon" :src="getIcon" />
@@ -18,6 +22,9 @@ export default {
       default: null,
     },
     color: {
+      default: null,
+    },
+    disabled: {
       default: null,
     },
   },
