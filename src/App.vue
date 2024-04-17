@@ -125,11 +125,11 @@
           :error="missing.wallets[index]?.address ? false : true"
         />
         <div style="display: flex; width: 45%; justify-content: space-between">
+          
           <InputBox
             class="input-item"
             type="number"
             :style="{ width: index > 0 ? '65%' : '100%' }"
-            :defaultValue="item.royalty"
             :step="5"
             :value="item.royalty"
             @update:value="handleCreator($event, index, 'royalty')"

@@ -29,6 +29,7 @@ const router = createRouter({
 })
 
 app
+    
     .component('ButtonBox', ButtonBox)
     .component('InputBox', InputBox)
     .component('Toggle', Toggle)

@@ -30,7 +30,7 @@
           type="number"
           :min="min"
           :max="max"
-          v-model="data_value"
+          :value="value"
           style="
             text-align: center;
             width: 100%;
@@ -62,7 +62,6 @@ export default {
   mixins: [],
   data() {
     return {
-      data_value: this.defaultValue,
       N: this.step,
       input_type: this.type,
     };
