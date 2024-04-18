@@ -14,8 +14,9 @@
   </header>
   <body>
     <div class="details-container">
-      <span style="font-size: 24px">Details</span>
+      <span style="font-size: 24px; width: 100%">Details</span>
       <FileUploader
+        style="width: 100%"
         v-model:value="value.file"
         :error="hasFile ? false : true"
         :error_cover="hasCover ? false : true"
@@ -34,21 +35,16 @@
         <label>Description<span style="color: #f23d4f">*</span></label>
         <InputBox
           v-model:value="value.description"
+          type="textarea"
           class="input-item"
           placeholder="Description for your art"
-          style="height: 70px"
           @update:value="inputValue($event, 'description')"
           :error="missing.description ? false : true"
         />
       </div>
       <div class="general-royalty-container">
         <label>Secondary royalty %</label>
-        <span
-          style="
-            font-size: 14px;
-            margin-top: 12px;
-            color: rgba(30, 30, 30, 0.5);
-          "
+        <span style="font-size: 14px; color: rgba(30, 30, 30, 0.5)"
           >The percentage of future sales that will be sent to the
           creators</span
         >
@@ -66,7 +62,7 @@
           <span>Add traits</span>
           <Toggle :value="showTraits" @input="updateShowTraits" />
         </div>
-        <div v-if="showTraits">
+        <div v-if="showTraits" class="list-container">
           <div
             class="traits-container"
             v-for="(item, index) in getTraits"
@@ -97,7 +93,6 @@
                 color="rgba(30, 30, 30, 0.1)"
                 @click="removeTrait(index)"
                 style="
-                  margin-top: 12px;
                   height: 43px;
                   width: 25%;
                   border: 1px solid rgba(30, 30, 30, 0.5);
@@ -118,43 +113,51 @@
       <span style="font-size: 24px">Collaboration</span>
       <div class="collaboration-titles">
         <span>Wallet</span>
-        <span>Royalty Percentage</span>
+        <span style="position: absolute; right: 55px">Royalty Percentage</span>
       </div>
-      <div
-        class="traits-container"
-        v-for="(item, index) in getWallets"
-        :key="index"
-      >
-        <InputBox
-          :value="index < 1 ? getPublicKey : item.address"
-          class="input-item"
-          placeholder="Wallet Address"
-          style="width: 45%"
-          @update:value="handleCreator($event, index, 'address')"
-          :error="missing.wallets[index]?.address ? false : true"
-        />
-        <div style="display: flex; width: 45%; justify-content: space-between">
+      <div class="list-container">
+        <div
+          class="traits-container"
+          v-for="(item, index) in getWallets"
+          :key="index"
+        >
           <InputBox
+            :value="index < 1 ? getPublicKey : item.address"
             class="input-item"
-            type="number"
-            :style="{ width: index > 0 ? '65%' : '100%' }"
-            :step="5"
-            :value="item.royalty"
-            @update:value="handleCreator($event, index, 'royalty')"
-            :error="calculateTotalRoyalty"
+            placeholder="Wallet Address"
+            style="width: 45%"
+            @update:value="handleCreator($event, index, 'address')"
+            :error="missing.wallets[index]?.address ? false : true"
           />
-          <ButtonBox
-            v-if="index > 0"
-            icon="/src/assets/royaltiesDeleteButton.svg"
-            color="rgba(30, 30, 30, 0.1)"
-            @click="removeCreator(index)"
+          <div
             style="
-              margin-top: 12px;
-              height: 43px;
-              width: 25%;
-              border: 1px solid rgba(30, 30, 30, 0.5);
+              display: flex;
+              width: 45%;
+              justify-content: space-between;
+              align-self: baseline;
             "
-          />
+          >
+            <InputBox
+              class="input-item"
+              type="number"
+              :style="{ width: index > 0 ? '65%' : '100%' }"
+              :step="5"
+              :value="item.royalty"
+              @update:value="handleCreator($event, index, 'royalty')"
+              :error="calculateTotalRoyalty"
+            />
+            <ButtonBox
+              v-if="index > 0"
+              icon="/src/assets/royaltiesDeleteButton.svg"
+              color="rgba(30, 30, 30, 0.1)"
+              @click="removeCreator(index)"
+              style="
+                height: 43px;
+                width: 25%;
+                border: 1px solid rgba(30, 30, 30, 0.5);
+              "
+            />
+          </div>
         </div>
       </div>
       <h5 v-if="calculateTotalRoyalty" style="color: red; margin-top: 12px">
@@ -175,9 +178,9 @@
       />
     </div>
   </body>
-  <div>
+  <!-- <div>
     {{ value }}
-  </div>
+  </div> -->
 </template>
 <script>
 import { useWallet } from "solana-wallets-vue";
@@ -377,24 +380,32 @@ body {
 }
 .details-container {
   padding: 24px 24px 0px 24px;
-}
-.general-royalty-container {
-  margin-top: 16px;
+
+  --gap: 12px;
+  gap: var(--gap);
   display: flex;
   flex-wrap: wrap;
-  margin-bottom: 16px;
+}
+.general-royalty-container {
+  --gap: 12px;
+  gap: var(--gap);
+  display: flex;
+  flex-wrap: wrap;
 }
 .add-traits-title {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
 }
 .input-container {
-  margin-bottom: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap);
+  --gap: 12px;
+  width: 100%;
 }
 .input-item {
-  margin-top: 12px;
-  height: 41px;
   display: block;
 }
 .collaboration-container {
@@ -404,11 +415,12 @@ body {
 .traits-container {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 .collaboration-titles {
   display: flex;
   justify-content: space-between;
-  margin-top: 24px;
+  margin: 24px 0px;
 }
 .royalty-container {
   display: flex;
@@ -428,5 +440,11 @@ body {
 .next-button-container {
   height: 35px;
   border-radius: 16px;
+}
+.list-container {
+  --gap: 12px;
+  gap: var(--gap);
+  display: flex;
+  flex-wrap: wrap;
 }
 </style>

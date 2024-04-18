@@ -57,7 +57,7 @@ export default {
   height: 17px;
   width: 17px;
   left: 4px;
-  bottom: 4px;
+  bottom: 4.5px;
   background-color: white;
   transition: 0.4s;
   border-radius: 50%;
