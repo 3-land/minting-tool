@@ -9,8 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@solana/wallet-adapter-wallets": "^0.19.32",
     "@tresjs/cientos": "^3.8.0",
     "@tresjs/core": "^3.8.1",
+    "solana-wallets-vue": "^0.6.1",
     "three": "^0.163.0",
     "tweakpane": "^4.0.3",
     "vue": "^3.4.21",

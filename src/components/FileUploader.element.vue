@@ -5,20 +5,35 @@
     @dragover.prevent
     @drop="onDrop($event, false)"
   >
-    <div class="thumbnail">
+    <div
+      class="thumbnail"
+      :style="{
+        border: error ? '2px dashed red' : '1px dashed rgba(0, 0, 0, 0.2)',
+      }"
+    >
       <span v-if="fileType == null">Upload Your File</span>
       <img
         v-if="fileType == 'image'"
-        :src="fileSrc"
+        :src="fileSrc.blob"
         alt="Uploaded file thumbnail"
       />
-      <video v-if="fileType == 'video'" :src="fileSrc" ref="video" controls />
-      <audio v-if="fileType == 'audio'" :src="fileSrc" ref="audio" controls />
+      <video
+        v-if="fileType == 'video'"
+        :src="fileSrc.blob"
+        ref="video"
+        controls
+      />
+      <audio
+        v-if="fileType == 'audio'"
+        :src="fileSrc.blob"
+        ref="audio"
+        controls
+      />
       <TresCanvas v-if="fileType == '3d'" clear-color="#82DBC5">
         <TresPerspectiveCamera :args="[45, 120, 0.1, 1000]" />
         <OrbitControls />
         <Suspense>
-          <GLTFModel :path="fileSrc" draco />
+          <GLTFModel :path="fileSrc.blob" draco />
         </Suspense>
         <TresDirectionalLight
           :position="[-4, 8, 4]"
@@ -33,6 +48,7 @@
       @change="onFileChange($event, false)"
       style="display: none"
     />
+    <!-- <h5 v-if="error" style="color: red">Missing File</h5> -->
   </div>
   <div v-if="fileType == 'video' || fileType == 'audio'">
     <span>Cover</span>
@@ -42,7 +58,14 @@
       @dragover.prevent
       @drop="onDrop($event, true)"
     >
-      <div class="thumbnail">
+      <div
+        class="thumbnail"
+        :style="{
+          border: error_cover
+            ? '2px dashed red'
+            : '1px dashed rgba(0, 0, 0, 0.2)',
+        }"
+      >
         <span v-if="!coverFileSrc">Upload the cover</span>
         <img :src="coverFileSrc" />
       </div>
@@ -69,6 +92,8 @@ export default {
   },
   props: {
     value: { default: null },
+    error: { default: null },
+    error_cover: { default: null },
   },
   methods: {
     openFileExplorer(cover) {
@@ -85,7 +110,8 @@ export default {
       // console.log(file);
       if (file && !cover) {
         this.checkFileType(file);
-        this.fileSrc = URL.createObjectURL(file);
+        file.blob = URL.createObjectURL(file);
+        this.fileSrc = file;
         this.coverFileSrc = "";
         this.$emit("update:value", {
           file: this.fileSrc,
@@ -93,7 +119,8 @@ export default {
         });
       }
       if (file && cover) {
-        this.coverFileSrc = URL.createObjectURL(file);
+        file.blob = URL.createObjectURL(file);
+        this.coverFileSrc = file;
         this.$emit("update:value", {
           file: this.fileSrc,
           cover: this.coverFileSrc,
@@ -105,7 +132,8 @@ export default {
       const file = e.dataTransfer.files[0];
       if (file && !cover) {
         this.checkFileType(file);
-        this.fileSrc = URL.createObjectURL(file);
+        file.blob = URL.createObjectURL(file);
+        this.fileSrc = file;
         this.coverFileSrc = "";
         this.$emit("update:value", {
           file: this.fileSrc,
@@ -113,7 +141,8 @@ export default {
         });
       }
       if (file && cover) {
-        this.coverFileSrc = URL.createObjectURL(file);
+        file.blob = URL.createObjectURL(file);
+        this.coverFileSrc = file;
         this.$emit("update:value", {
           file: this.fileSrc,
           cover: this.coverFileSrc,
@@ -138,11 +167,10 @@ export default {
 <style>
 .file-container {
   height: 325px;
-  padding: 16px 16px 24px;
+  padding: 16px 0px 24px;
   cursor: pointer;
 }
 .thumbnail {
-  border: 1px dashed rgba(0, 0, 0, 0.2);
   border-radius: 16px;
   height: 100%;
   align-items: center;

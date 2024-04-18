@@ -13,6 +13,9 @@
         height: 100%;
         border-radius: 4px;
         background-color: rgba(30, 30, 30, 0.1);
+        padding-left: 12px;
+        box-sizing: border-box;
+        outline: none;
       "
       :style="{
         border:
@@ -21,8 +24,8 @@
             : '1px solid rgba(30, 30, 30, 0.5)',
       }"
     />
-    <span v-if="error && input_type != 'number'" style="color: red"
-      >Missing Field</span
+    <div v-if="error && input_type != 'number'" style="color: red;"
+      >Missing Field</div
     >
     <div class="number-input" v-if="input_type == 'number'">
       <div class="input-container">
@@ -50,11 +53,12 @@
         <span class="percent-sign">%</span>
       </div>
       <div class="arrows">
-        <button style="cursor: pointer" @click="increment">▲</button>
+        <button style="cursor: pointer;" @click="increment">▲</button>
         <button style="cursor: pointer" @click="decrement">▼</button>
       </div>
     </div>
-  </div>
+  </div
+  height: fit-contentv>
 </template>
 
 <script>
@@ -64,6 +68,7 @@ export default {
     return {
       N: this.step,
       input_type: this.type,
+      localValue: this.value, // Add this line
     };
   },
   props: {
@@ -79,19 +84,25 @@ export default {
   computed: {},
   methods: {
     increment() {
-      if (this.data_value < 100) {
-        this.data_value += this.N;
-        this.$emit("update:value", this.data_value);
+      if (this.localValue < 100) {
+        this.localValue += this.N;
+        this.$emit("update:value", this.localValue);
       }
     },
     decrement() {
-      if (this.data_value - this.N >= 0) {
-        this.data_value -= this.N;
-        this.$emit("update:value", this.data_value);
+      if (this.localValue - this.N >= 0) {
+        this.localValue -= this.N;
+        this.$emit("update:value", this.localValue);
       }
     },
     updateValue($event) {
-      this.$emit("update:value", $event.target.value);
+      this.localValue = $event.target.value;
+      this.$emit("update:value", this.localValue);
+    },
+  },
+  watch: {
+    value(newVal) {
+      this.localValue = newVal;
     },
   },
 };
@@ -131,6 +142,7 @@ input[type="number"] {
   flex-direction: column;
   background-color: rgba(30, 30, 30, 1);
   border-radius: 4px;
+  height: fit-content
 }
 .arrows button {
   z-index: 1;
