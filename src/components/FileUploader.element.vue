@@ -33,7 +33,8 @@
         <TresPerspectiveCamera :args="[45, 120, 0.1, 1000]" />
         <OrbitControls />
         <Suspense>
-          <GLTFModel :path="fileSrc.blob" draco />
+          <!-- El problema parece ser que 'path' no esta escuchando el cambio de la variable fileSrc.blob, agregue un v-if para reiniciar por completo el componente, como quickfix -->
+          <GLTFModel v-if="!changing" :path="fileSrc.blob" draco />
         </Suspense>
         <TresDirectionalLight
           :position="[-4, 8, 4]"
@@ -85,6 +86,7 @@ import { OrbitControls } from "@tresjs/cientos";
 export default {
   data() {
     return {
+      changing:false,
       fileSrc: null,
       coverFileSrc: null,
       fileType: null,
@@ -94,6 +96,16 @@ export default {
     value: { default: null },
     error: { default: null },
     error_cover: { default: null },
+  },
+  watch:{
+    fileSrc:{handler(x,y){
+      if(x?.blob != y?.blob){
+        this.changing = true;
+        setTimeout(()=>{
+          this.changing = false;  
+        },10)
+      }
+    },deep:true}
   },
   methods: {
     openFileExplorer(cover) {
