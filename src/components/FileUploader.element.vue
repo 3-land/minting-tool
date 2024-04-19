@@ -134,8 +134,10 @@ export default {
         this.checkFileType(file);
         file.blob = URL.createObjectURL(file);
         this.fileSrc = file;
-
-        if (this.fileSrc.type.includes("image")) {
+        if (
+          this.fileSrc.type.includes("image") ||
+          this.fileSrc.name.includes(".glb")
+        ) {
           this.coverFileSrc = null;
         } else {
           this.coverFileSrc = "";
@@ -163,7 +165,10 @@ export default {
         file.blob = URL.createObjectURL(file);
         this.fileSrc = file;
 
-        if (this.fileSrc.type.includes("image")) {
+        if (
+          this.fileSrc.type.includes("image") ||
+          this.fileSrc.name.includes(".glb")
+        ) {
           this.coverFileSrc = null;
         } else {
           this.coverFileSrc = "";

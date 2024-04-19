@@ -19,6 +19,7 @@
         width="345px"
         height="325px"
         style="background-color: black; border-radius: 16px"
+        :src="data"
       />
     </div>
   </div>
@@ -27,9 +28,13 @@
 export default {
   mixins: [],
   data() {
-    return {};
+    return { data: this.file };
   },
-  props: {},
+  props: {
+    file: {
+      default: null,
+    },
+  },
   computed: {},
   methods: {},
 };

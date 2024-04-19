@@ -173,7 +173,6 @@
       <ButtonBox
         class="next-button-container"
         label="Next"
-        :disabled="isReady"
         @click="goToReview()"
       />
     </div>
