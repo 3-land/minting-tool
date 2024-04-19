@@ -8,6 +8,8 @@ import Toggle from "./components/Toggle.element.vue";
 import GeneralSettings from "./components/GeneralSettings.element.vue";
 import Review from "./components/Review.element.vue";
 import Congratulations from "./components/Congratulations.element.vue";
+import PopUp from "./components/PopUp.element.vue";
+
 import { WalletMultiButton } from "solana-wallets-vue";
 
 import { TresCanvas } from '@tresjs/core';
@@ -38,6 +40,7 @@ app
     .component('GeneralSettings', GeneralSettings)
     .component('Review', Review)
     .component('Congratulations', Congratulations)
+    .component('PopUp', PopUp)
     .component('WalletMultiButton', WalletMultiButton)
     .component('TresCanvas', TresCanvas)
     .component('OrbitControls', OrbitControls)

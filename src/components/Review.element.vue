@@ -132,6 +132,17 @@
       @click="mintAsset()"
     />
   </div>
+  <div v-if="showPopUp" class="popup-main-container">
+    <PopUp
+      title="This is the title"
+      content="This is the very important content that gives context"
+      button_msg="Procced"
+      @action="proceed"
+    />
+  </div>
+  <div v-if="loading" class="loader-container">
+    <span class="loader"></span>
+  </div>
 </template>
 <script>
 import { OrbitControls } from "@tresjs/cientos";
@@ -141,7 +152,7 @@ export default {
   emit: ["mint"],
 
   data() {
-    return { data: this.nft_data };
+    return { data: this.nft_data, showPopUp: false, loading: false };
   },
   props: {
     nft_data: {
@@ -167,7 +178,18 @@ export default {
         : null;
     },
     mintAsset() {
-      console.log("mint");
+      this.showPopUp = true;
+      // if (!showPopUp) {
+      //   this.$emit("mint", this.data);
+      // }
+    },
+    sleep(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    },
+    async proceed() {
+      this.showPopUp = false;
+      this.loading = true;
+      await this.sleep(5000);
       this.$emit("mint", this.data);
     },
   },
@@ -197,5 +219,71 @@ body {
   border-top: 1px solid lightgray;
   width: auto;
   padding: 24px;
+}
+.popup-main-container {
+  background: rgb(30, 30, 30, 0.5);
+  width: 100%;
+  height: 891px;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  top: 0;
+  backdrop-filter: blur(5px);
+}
+.loader-container {
+  height: 891px;
+  display: flex;
+  background-color: rgb(30, 30, 30, 0.5);
+  backdrop-filter: blur(5px);
+  position: absolute;
+  top: 0;
+  width: 100vw;
+  justify-content: center;
+  align-items: center;
+}
+.loader {
+  width: calc(100px - 24px);
+  height: 50px;
+  position: relative;
+  animation: flippx 2s infinite linear;
+}
+.loader:before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  transform-origin: -24px 50%;
+  animation: spin 1s infinite linear;
+}
+.loader:after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+@keyframes flippx {
+  0%,
+  49% {
+    transform: scaleX(1);
+  }
+  50%,
+  100% {
+    transform: scaleX(-1);
+  }
+}
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>

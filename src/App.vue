@@ -21,12 +21,17 @@ export default {
       this.nft = data;
     },
     uploadAsset(data) {
-      console.log("upload");
-      console.log(data);
-      this.minted = data.file.file.blob;
+      this.minted = data.file;
     },
   },
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+html,
+body,
+#app {
+  margin: 0;
+  padding: 0;
+}
+</style>

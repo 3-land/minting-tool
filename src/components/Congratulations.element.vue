@@ -16,11 +16,40 @@
       "
     >
       <img
-        width="345px"
-        height="325px"
-        style="background-color: black; border-radius: 16px"
-        :src="data"
+        v-if="getType == 'image'"
+        style="
+          background-color: black;
+          width: 100%;
+          height: 100%;
+          border-radius: 16px;
+        "
+        :src="data.file.blob"
       />
+      <video
+        v-if="getType == 'video'"
+        :src="data.file.blob"
+        style="max-height: 100%; max-width: 100%"
+        ref="video"
+        controls
+      />
+      <audio
+        v-if="getType == 'audio'"
+        :src="data.file.blob"
+        ref="audio"
+        controls
+      />
+      <TresCanvas v-if="getType == '3d'" clear-color="#82DBC5">
+        <TresPerspectiveCamera :args="[45, 120, 0.1, 1000]" />
+        <OrbitControls />
+        <Suspense>
+          <GLTFModel :path="data.file.blob" draco />
+        </Suspense>
+        <TresDirectionalLight
+          :position="[-4, 8, 4]"
+          :intensity="1.5"
+          cast-shadow
+        />
+      </TresCanvas>
     </div>
   </div>
 </template>
@@ -35,8 +64,25 @@ export default {
       default: null,
     },
   },
-  computed: {},
-  methods: {},
+  computed: {
+    getType() {
+      const type = this.checkFileType(this.data.file);
+      return type;
+    },
+  },
+  methods: {
+    checkFileType(file) {
+      return file.type.includes("image")
+        ? "image"
+        : file.type.includes("audio")
+        ? "audio"
+        : file.type.includes("video")
+        ? "video"
+        : file.name.includes(".glb")
+        ? "3d"
+        : null;
+    },
+  },
 };
 </script>
 <style></style>
