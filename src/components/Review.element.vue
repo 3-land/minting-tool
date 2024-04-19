@@ -197,6 +197,11 @@ export default {
 </script>
 
 <style scoped>
+  img
+  {
+object-fit: contain;
+  object-position: center;
+}
 body {
   margin: 32px;
   display: flex;
@@ -222,13 +227,15 @@ body {
 }
 .popup-main-container {
   background: rgb(30, 30, 30, 0.5);
-  width: 100%;
-  height: 891px;
+  width: 100dvw;
+  height: 100dvh;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  top: 0px;
   position: fixed;
   display: flex;
   justify-content: center;
-  top: 0;
-  backdrop-filter: blur(5px);
 }
 .loader-container {
   height: 891px;

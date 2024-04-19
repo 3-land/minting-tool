@@ -122,7 +122,7 @@
           :key="index"
         >
           <InputBox
-            :value="index < 1 ? getPublicKey : item.address"
+            :value="index < 1 ? (item.address||getPublicKey) : item.address"
             class="input-item"
             placeholder="Wallet Address"
             style="width: 45%"

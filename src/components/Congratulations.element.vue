@@ -85,4 +85,11 @@ export default {
   },
 };
 </script>
-<style></style>
+<style scoped>
+  img
+    {
+  object-fit: contain;
+    object-position: center;
+  }
+  
+</style>
