@@ -187,6 +187,7 @@ import { useWallet } from "solana-wallets-vue";
 
 export default {
   mixins: [],
+  emits: ["nft_data"],
   data() {
     return {
       showTraits: true,
@@ -214,6 +215,9 @@ export default {
   computed: {
     getPublicKey() {
       const { publicKey } = useWallet();
+      if (this.value.wallets[0].address != publicKey.value) {
+        this.value.wallets[0].address = publicKey.value;
+      }
       return publicKey.value;
     },
     hasFile() {
@@ -322,15 +326,18 @@ export default {
       });
     },
     goToReview() {
+      let canGo = true;
       //Checks if there is any missing fields
       for (const _value in this.value) {
         if (_value == "traits") {
           for (const _key in this.value.traits) {
             if (!this.value.traits[_key].name) {
               this.missing.traits[_key].name = "";
+              canGo = false;
             }
             if (!this.value.traits[_key].value) {
               this.missing.traits[_key].value = "";
+              canGo = false;
             }
           }
         }
@@ -338,23 +345,33 @@ export default {
           for (const _key in this.value.wallets) {
             if (!this.value.wallets[_key].address) {
               this.missing.wallets[_key].address = "";
+              canGo = false;
             }
             if (!this.value.wallets[_key].royalty) {
               this.missing.wallets[_key].royalty = "";
+              canGo = false;
             }
           }
         }
         if (_value == "file") {
           if (!this.value?.file?.file) {
             this.missing.file.file = "";
+            canGo = false;
           }
-          if (!this.value?.file?.cover) {
+          if (this.value?.file?.cover == "") {
             this.missing.file.cover = "";
+            canGo = false;
           }
         }
         if (!this.value[_value]) {
           this.missing[_value] = "";
+          canGo = false;
         }
+      }
+      if (canGo) {
+        this.$emit("nft_data", this.value);
+      } else {
+        console.log("something happened");
       }
     },
   },

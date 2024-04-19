@@ -134,7 +134,13 @@ export default {
         this.checkFileType(file);
         file.blob = URL.createObjectURL(file);
         this.fileSrc = file;
-        this.coverFileSrc = "";
+
+        if (this.fileSrc.type.includes("image")) {
+          this.coverFileSrc = null;
+        } else {
+          this.coverFileSrc = "";
+        }
+
         this.$emit("update:value", {
           file: this.fileSrc,
           cover: this.coverFileSrc,
@@ -156,7 +162,13 @@ export default {
         this.checkFileType(file);
         file.blob = URL.createObjectURL(file);
         this.fileSrc = file;
-        this.coverFileSrc = "";
+
+        if (this.fileSrc.type.includes("image")) {
+          this.coverFileSrc = null;
+        } else {
+          this.coverFileSrc = "";
+        }
+
         this.$emit("update:value", {
           file: this.fileSrc,
           cover: this.coverFileSrc,

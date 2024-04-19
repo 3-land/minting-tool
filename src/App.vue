@@ -1,17 +1,27 @@
 <template>
-  <GeneralSettings v-if="isReady" />
-  <Review v-if="!isReady" />
-  <Congratulations v-if="!isReady" />
+  <GeneralSettings v-if="!isReady" @nft_data="manageNft" />
+  <Review v-if="isReady" :nft_data="nft" />
+  <Congratulations v-if="isMinted" />
 </template>
 <script>
 export default {
   mixins: [],
   data() {
-    return { isReady: true };
+    return { nft: null, isMinted: false };
   },
   props: {},
-  computed: {},
-  methods: {},
+  computed: {
+    isReady() {
+      if (this.nft != null) return true;
+      return false;
+    },
+  },
+  methods: {
+    manageNft(data) {
+      console.log(data);
+      this.nft = data;
+    },
+  },
 };
 </script>
 
