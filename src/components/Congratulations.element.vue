@@ -6,7 +6,7 @@
     <span style="width: 100%; font-size: 60px">EDITIONS</span>
     <span style="width: 100%; font-size: 24px">has been created!</span>
   </div>
-  <div style="display: flex; justify-content: center; margin-top: 95px">
+  <div style="display: flex; justify-content: center; margin-top: 35px">
     <div
       style="
         background-color: white;

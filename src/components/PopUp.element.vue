@@ -39,7 +39,7 @@ export default {
 <style>
 .popup-container {
   position: absolute;
-  top: 40%;
+  top: 20%;
   background-color: white;
   width: 350px;
   border-radius: 4px;

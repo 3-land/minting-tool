@@ -224,7 +224,7 @@ body {
   background: rgb(30, 30, 30, 0.5);
   width: 100%;
   height: 891px;
-  position: absolute;
+  position: fixed;
   display: flex;
   justify-content: center;
   top: 0;
@@ -235,15 +235,16 @@ body {
   display: flex;
   background-color: rgb(30, 30, 30, 0.5);
   backdrop-filter: blur(5px);
-  position: absolute;
+  position: fixed;
   top: 0;
   width: 100vw;
   justify-content: center;
-  align-items: center;
+  /* align-items: center; */
 }
 .loader {
   width: calc(100px - 24px);
   height: 50px;
+  top: 20%;
   position: relative;
   animation: flippx 2s infinite linear;
 }
