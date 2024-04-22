@@ -1,4 +1,5 @@
 <template>
+  <router-view />
   <GeneralSettings v-if="!isReady" @nft_data="manageNft" :data="nft" />
   <Review
     v-if="isReady && !minted && edit"

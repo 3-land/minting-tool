@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
+import { createRouter, createWebHistory } from 'vue-router'
 
 import ButtonBox from "./components/ButtonBox.element.vue";
 import InputBox from "./components/InputBox.element.vue";
@@ -9,6 +10,7 @@ import GeneralSettings from "./components/GeneralSettings.element.vue";
 import Review from "./components/Review.element.vue";
 import Congratulations from "./components/Congratulations.element.vue";
 import PopUp from "./components/PopUp.element.vue";
+import TestMint from "./components/TestMint.element.vue";
 
 import { WalletMultiButton } from "solana-wallets-vue";
 
@@ -30,9 +32,20 @@ const walletOptions = {
     autoConnect: true,
 };
 
+// Define routes
+const routes = [
+    { path: '/test', component: TestMint }
+]
+
+// Create router instance
+const router = createRouter({
+    history: createWebHistory(),
+    routes,
+})
+
 const app = createApp(App)
 app
-
+    .use(router) // Use the router instance
     .component('ButtonBox', ButtonBox)
     .component('InputBox', InputBox)
     .component('Toggle', Toggle)

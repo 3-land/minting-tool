@@ -1,5 +1,5 @@
-import { init as Irys } from "@/services/irys";
-import { uuid4 } from "@/services/app";
+import { init as Irys } from "./irys";
+// import { uuid4 } from "@/services/app";
 
 import { useWallet } from 'solana-wallets-vue';
 import { Connection, clusterApiUrl, Keypair, PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
@@ -49,6 +49,131 @@ import {
 
 import BN from "bn.js";
 
+
+import {
+    PROGRAM_ID as BUBBLEGUM_PROGRAM_ID,
+    TokenProgramVersion,
+    TokenStandard,
+    /*createTree as */createCreateTreeInstruction,
+    /*mintV1 as */createMintV1Instruction
+} from "@metaplex-foundation/mpl-bubblegum"; //0.7.0
+
+import {
+    SPL_ACCOUNT_COMPRESSION_PROGRAM_ID,
+    SPL_NOOP_PROGRAM_ID,
+    createAllocTreeIx
+} from "@solana/spl-account-compression"; //0.1.10
+
+// import { Keypair, PublicKey } from "@solana/web3.js";
+
+export const createTree = async ({ payer, public_data }) => {
+
+    public_data = public_data ?? true;
+    payer = toPublicKey(payer);
+
+    const connection = createConnection();
+    const signers = [];
+    const merkleTreeKeypair = Keypair.generate();
+    signers.push(merkleTreeKeypair);
+
+    const maxDepth = 15;
+    const maxBufferSize = 64;
+
+    const maxDepthSizePair = { maxDepth, maxBufferSize };
+    const canopyDepth = 8;
+
+    const allocTreeIx = await createAllocTreeIx(
+        connection,
+        merkleTreeKeypair.publicKey,
+        payer,
+        maxDepthSizePair,
+        canopyDepth
+    );
+    const [treeAuthority] = PublicKey.findProgramAddressSync(
+        [Buffer.from(merkleTreeKeypair.publicKey.toBytes())],
+        BUBBLEGUM_PROGRAM_ID
+    );
+    const createTreeIxAccounts = {
+        treeAuthority,
+        merkleTree: merkleTreeKeypair.publicKey,
+        payer,
+        treeCreator: payer,
+        logWrapper: SPL_NOOP_PROGRAM_ID,
+        compressionProgram: SPL_ACCOUNT_COMPRESSION_PROGRAM_ID,
+    };
+    const createTreeIxArgs = {
+        maxDepth: maxDepthSizePair.maxDepth,
+        maxBufferSize: maxDepthSizePair.maxBufferSize,
+        public_data,
+    };
+    const createTreeIx = createCreateTreeInstruction(
+        createTreeIxAccounts,
+        createTreeIxArgs
+    );
+
+    const instructions = [allocTreeIx, createTreeIx];
+    return instructions;
+
+}
+
+const compressNFT = async ({ payer, tree, treeDelegate }) => {
+
+    const symbol = "Symbol";
+    const name = "Name";
+
+    tree = toPublicKey(tree);
+    payer = toPublicKey(payer);
+    treeDelegate = treeDelegate ? toPublicKey(treeDelegate) || payer : '';
+
+    const offchainMetadataUri = "https://arweave.net/blabla";
+
+    const sellerFeeBasisPoints = royalty * 100;
+
+    const creators = [
+        { address: "blabla", verified: true, share: 100 }
+    ];
+
+    const isMutable = false;
+
+    const onchain = {
+        name,
+        symbol,
+        uri: offchainMetadataUri,
+        sellerFeeBasisPoints,
+        creators,
+        collection: null,
+        uses: null,
+        editionNonce: 0,
+        isMutable,
+        primarySaleHappened: true,
+        tokenProgramVersion: TokenProgramVersion.Original,
+        tokenStandard: TokenStandard.NonFungible,
+    }
+
+    const [treeAuthority] = PublicKey.findProgramAddressSync(
+        [Buffer.from(tree.toBytes())],
+        BUBBLEGUM_PROGRAM_ID
+    );
+
+    const mint_accounts = {
+        treeAuthority,
+        leafOwner: payer, //receiver
+        leafDelegate: payer, //receiver
+        merkleTree: tree,
+        payer,
+        treeDelegate,
+        logWrapper: SPL_NOOP_PROGRAM_ID,
+        compressionProgram: SPL_ACCOUNT_COMPRESSION_PROGRAM_ID
+    }
+
+    const signers = [];
+    const instructions = [];
+
+    const mint_args = { message: onchain };
+    instructions.push(createMintV1Instruction(mint_accounts, mint_args))
+}
+
+
 export const toPublicKey = (key) => {
     if (typeof key !== "string") return key;
     const PubKeysInternedMap = new Map()
@@ -64,7 +189,7 @@ const createConnection = () => {
     return new Connection("RPC_URL", { commitment: "confirmed", confirmTransactionInitialTimeout: (60 * 2 * 1000) }) //creo que confirmTransactionInitialTimeout ya no se usa
 }
 
-const crearNFT = ({ owner, files, thumbnail }) => {
+const crearNFT = async ({ owner, files, thumbnail }) => {
 
     const mint = Keypair.generate();
 
@@ -251,3 +376,12 @@ export const createLegacyNFT = async ({ owner, mint, metadata }) => {
     return { instructions, mint };
 
 }
+
+export const uuid4 = () => {
+    const ho = (n, p) => n.toString(16).padStart(p, 0); /// Return the hexadecimal text representation of number `n`, padded with zeroes to be of length `p`
+    const data = crypto.getRandomValues(new Uint8Array(16)); /// Fill the buffer with random data
+    data[6] = (data[6] & 0xf) | 0x40; /// Patch the 6th byte to reflect a version 4 UUID
+    data[8] = (data[8] & 0x3f) | 0x80; /// Patch the 8th byte to reflect a variant 1 UUID (version 4 UUIDs are)
+    const view = new DataView(data.buffer); /// Create a view backed by a 16-byte buffer
+    return `${ho(view.getUint32(0), 8)}-${ho(view.getUint16(4), 4)}-${ho(view.getUint16(6), 4)}-${ho(view.getUint16(8), 4)}-${ho(view.getUint32(10), 8)}${ho(view.getUint16(14), 4)}`; /// Compile the canonical textual form from the array data
+};
