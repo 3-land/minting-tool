@@ -15,18 +15,18 @@
         <span v-if="fileType == null">Upload Your File</span>
         <img
           v-if="fileType == 'image'"
-          :src="fileSrc.blob"
+          :src="value.file.blob || fileSrc.blob"
           alt="Uploaded file thumbnail"
         />
         <video
           v-if="fileType == 'video'"
-          :src="fileSrc.blob"
+          :src="value.file.blob || fileSrc.blob"
           ref="video"
           controls
         />
         <audio
           v-if="fileType == 'audio'"
-          :src="fileSrc.blob"
+          :src="value.file.blob || fileSrc.blob"
           ref="audio"
           controls
         />
@@ -35,7 +35,11 @@
           <OrbitControls />
           <Suspense>
             <!-- El problema parece ser que 'path' no esta escuchando el cambio de la variable fileSrc.blob, agregue un v-if para reiniciar por completo el componente, como quickfix -->
-            <GLTFModel v-if="!changing" :path="fileSrc.blob" draco />
+            <GLTFModel
+              v-if="!changing"
+              :path="value.file.blob || fileSrc.blob"
+              draco
+            />
           </Suspense>
           <TresDirectionalLight
             :position="[-4, 8, 4]"
@@ -60,7 +64,7 @@
         class="file-container"
         @click="openFileExplorer(true)"
         @dragover.prevent
-        @drop="onDrop($event, true)"
+        @drop="onDropCover($event, true)"
       >
         <div
           class="thumbnail"
@@ -214,7 +218,7 @@ export default {
 .file-container {
   height: 325px;
   width: 100%;
-  padding: 16px 0px 48px;
+  padding: 16px 24px 0px 24px;
   cursor: pointer;
 
   gap: var(--gap);
@@ -223,8 +227,10 @@ export default {
 }
 .thumbnail {
   border-radius: 16px;
-  height: 100%;
-  width: 100%;
+  /* height: 100%; */
+  height: 317px;
+  /* width: 100%; */
+  width: 300px;
   align-items: center;
   justify-content: center;
   display: flex;

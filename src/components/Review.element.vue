@@ -6,69 +6,89 @@
     >
   </header>
   <body>
-    <div
-      style="
-        border: 1px dashed rgb(30, 30, 30, 0.5);
-        border-radius: 4px;
-        width: 100%;
-        max-height: 344px;
-        display: flex;
-        justify-content: center;
-      "
-    >
-      <img
-        v-if="getType == 'image'"
-        height="100%"
-        width="100%"
-        :src="data.file.file.blob"
-        style="border-radius: 4px"
-      />
-      <video
-        v-if="getType == 'video'"
-        :src="data.file.file.blob"
-        style="max-height: 100%; max-width: 100%"
-        ref="video"
-        controls
-      />
-      <audio
-        v-if="getType == 'audio'"
-        :src="data.file.file.blob"
-        ref="audio"
-        controls
-      />
-      <TresCanvas v-if="getType == '3d'" clear-color="#82DBC5">
-        <TresPerspectiveCamera :args="[45, 120, 0.1, 1000]" />
-        <OrbitControls />
-        <Suspense>
-          <GLTFModel :path="data.file.file.blob" draco />
-        </Suspense>
-        <TresDirectionalLight
-          :position="[-4, 8, 4]"
-          :intensity="1.5"
-          cast-shadow
+    <div class="file-container" style="padding-top: 0px">
+      <div
+        style="
+          border: 1px dashed rgb(30, 30, 30, 0.5);
+          border-radius: 4px;
+          width: 100%;
+          height: 324px;
+          max-height: 344px;
+          align-items: center;
+          display: flex;
+          justify-content: center;
+        "
+      >
+        <img
+          v-if="getType == 'image'"
+          height="100%"
+          width="100%"
+          :src="data.file.file.blob"
+          style="border-radius: 4px"
         />
-      </TresCanvas>
+        <video
+          v-if="getType == 'video'"
+          :src="data.file.file.blob"
+          style="max-height: 100%; max-width: 100%"
+          ref="video"
+          controls
+        />
+        <audio
+          v-if="getType == 'audio'"
+          :src="data.file.file.blob"
+          ref="audio"
+          controls
+        />
+        <TresCanvas v-if="getType == '3d'" clear-color="#82DBC5">
+          <TresPerspectiveCamera :args="[45, 120, 0.1, 1000]" />
+          <OrbitControls />
+          <Suspense>
+            <GLTFModel :path="data.file.file.blob" draco />
+          </Suspense>
+          <TresDirectionalLight
+            :position="[-4, 8, 4]"
+            :intensity="1.5"
+            cast-shadow
+          />
+        </TresCanvas>
+      </div>
+      <div
+        v-if="getType == 'video' || getType == 'audio'"
+        style="
+          border: 1px dashed rgb(30, 30, 30, 0.5);
+          border-radius: 4px;
+          width: 100%;
+          display: flex;
+          justify-content: center;
+        "
+      >
+        <img
+          :src="data.file.cover.blob"
+          style="max-width: 100%; max-height: 100%; border-radius: 4px"
+        />
+      </div>
     </div>
+
     <div
-      v-if="getType == 'video' || getType == 'audio'"
       style="
-        border: 1px dashed rgb(30, 30, 30, 0.5);
-        border-radius: 4px;
+        border: 1px solid lightgray;
         width: 100%;
-        display: flex;
-        justify-content: center;
+        border-radius: 4px;
+        height: fit-content;
       "
     >
-      <img
-        :src="data.file.cover.blob"
-        style="max-width: 100%; max-height: 100%; border-radius: 4px"
-      />
-    </div>
-    <div style="border: 1px solid lightgray; width: 100%; border-radius: 4px">
       <div class="general-container">
-        <span style="width: 100%; padding: 24px; color: rgba(30, 30, 30, 0.5)"
-          >Details</span
-        >
+        <div style="display: flex; align-items: center; width: 100%">
+          <span style="width: 100%; padding: 24px; color: rgba(30, 30, 30, 0.5)"
+            >Details</span
+          >
+          <ButtonBox
+            color="transparent"
+            label="Edit"
+            style="color: black"
+            @click="edit"
+          />
+        </div>
         <span style="width: 100%; padding-left: 24px; font-size: 20px">{{
           data.name
         }}</span>
@@ -77,9 +97,23 @@
       <div
         style="border-top: 1px solid lightgray; width: 100%; padding-top: 24px"
       >
-        <span style="padding: 24px; color: rgba(30, 30, 30, 0.5)">Traits</span>
+        <div style="display: flex; align-items: center; width: 100%">
+          <span style="padding: 24px; color: rgba(30, 30, 30, 0.5); width: 100%"
+            >Traits</span
+          >
+          <ButtonBox
+            color="transparent"
+            label="Edit"
+            style="color: black"
+            @click="edit"
+          />
+        </div>
         <div style="display: flex; flex-wrap: wrap">
-          <div style="padding: 24px" v-for="(item, index) in data.traits">
+          <div
+            style="padding: 24px"
+            v-for="(item, index) in data.traits"
+            v-if="data.traits.length > 0"
+          >
             <div
               style="
                 color: rgb(30, 30, 30, 0.5);
@@ -97,6 +131,16 @@
 
               {{ item.name }}
             </div>
+          </div>
+          <div v-if="data.traits.length == 0">
+            <span
+              style="
+                padding-left: 24px;
+                color: rgba(30, 30, 30, 0.5);
+                font-size: 14px;
+              "
+              >No traits...</span
+            >
           </div>
         </div>
       </div>
@@ -166,6 +210,9 @@ export default {
     },
   },
   methods: {
+    edit() {
+      this.$emit("edit", { data: this.nft_data, section: "edit" });
+    },
     checkFileType(file) {
       return file.type.includes("image")
         ? "image"
@@ -197,9 +244,8 @@ export default {
 </script>
 
 <style scoped>
-  img
-  {
-object-fit: contain;
+img {
+  object-fit: contain;
   object-position: center;
 }
 body {
@@ -243,8 +289,12 @@ body {
   background-color: rgb(30, 30, 30, 0.5);
   backdrop-filter: blur(5px);
   position: fixed;
-  top: 0;
-  width: 100vw;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  top: 0px;
+  width: 100dvw;
+
   justify-content: center;
   /* align-items: center; */
 }
@@ -292,6 +342,22 @@ body {
 @keyframes spin {
   100% {
     transform: rotate(360deg);
+  }
+}
+
+@media (min-width: 769px) {
+  body {
+    flex-wrap: nowrap;
+  }
+  .main-button-container {
+    width: 200px;
+  }
+  .footer-container {
+    display: flex;
+    justify-content: flex-end;
+  }
+  .file-container {
+    padding-left: 0px;
   }
 }
 </style>
