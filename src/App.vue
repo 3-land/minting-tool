@@ -1,19 +1,20 @@
 <template>
   <!-- <router-view /> -->
-  <GeneralSettings v-if="!isReady" @nft_data="manageNft" :data="nft" />
+   {{nft}}
+  <GeneralSettings v-if="!isReady" v-model:data="nft" />
   <Review
     v-if="isReady && !minted && edit"
-    :nft_data="nft"
+    v-model:data="nft"
     @mint="uploadAsset"
     @edit="handleEdit"
   />
-  <Congratulations v-if="minted" :file="minted" />
+  <Congratulations v-if="minted" v-model:data="nft" :file="minted" />
 </template>
 <script>
 export default {
   mixins: [],
   data() {
-    return { nft: null, minted: null, edit: false };
+    return { nft: {name:"Hola"}, minted: null, edit: false };
   },
   props: {},
   computed: {

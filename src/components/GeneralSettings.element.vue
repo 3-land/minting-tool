@@ -12,7 +12,7 @@
     <span style="font-size: 14px">Create a cNFT</span>
     <div class="section-line" />
   </header>
-  <body class="body_container">
+  <div class="body_container">
     <div class="file-container">
       <span style="font-size: 24px; width: 100%">Details</span>
       <FileUploader
@@ -34,10 +34,12 @@
         <div class="input-container">
           <label>Name of your NFT<span style="color: #f23d4f">*</span></label>
           <InputBox
-            v-model:value="value.name"
+            :value="data?.name"
+            @update:value="inputChange($event, 'name')"
+            
             class="input-item"
             placeholder="Artwork title"
-            @update:value="inputValue($event, 'name')"
+            
             :error="missing.name ? false : true"
           />
         </div>
@@ -197,7 +199,7 @@
         />
       </div>
     </div>
-  </body>
+  </div>
   <!-- <div>
     {{ value }}
   </div> -->
@@ -284,6 +286,11 @@ export default {
     },
   },
   methods: {
+    inputChange(valor,name){
+      this.missing[name] = valor;
+      const v = {...(this.data||{}), [name]:valor};
+      this.$emit("update:data",v);
+    },
     inputValue(e, type) {
       this.missing[type] = e;
     },
