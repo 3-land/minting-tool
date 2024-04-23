@@ -1,6 +1,6 @@
 <template>
   <!-- <router-view /> -->
-   {{nft}}
+  {{ nft }}
   <GeneralSettings v-if="!isReady" v-model:data="nft" />
   <Review
     v-if="isReady && !minted && edit"
@@ -14,7 +14,7 @@
 export default {
   mixins: [],
   data() {
-    return { nft: {name:"Hola"}, minted: null, edit: false };
+    return { nft: { name: "Hola" }, minted: null, edit: false };
   },
   props: {},
   computed: {

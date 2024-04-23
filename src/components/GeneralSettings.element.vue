@@ -12,12 +12,12 @@
     <span style="font-size: 14px">Create a cNFT</span>
     <div class="section-line" />
   </header>
-  <div class="body_container">
+  <body class="body_container">
     <div class="file-container">
       <span style="font-size: 24px; width: 100%">Details</span>
       <FileUploader
         style="width: 100%"
-        v-model:value="value.file"
+        v-model:value="value?.file"
         :error="hasFile ? false : true"
         :error_cover="hasCover ? false : true"
       />
@@ -34,12 +34,10 @@
         <div class="input-container">
           <label>Name of your NFT<span style="color: #f23d4f">*</span></label>
           <InputBox
-            :value="data?.name"
-            @update:value="inputChange($event, 'name')"
-            
+            v-model:value="value.name"
             class="input-item"
             placeholder="Artwork title"
-            
+            @update:value="inputValue($event, 'name')"
             :error="missing.name ? false : true"
           />
         </div>
@@ -199,7 +197,7 @@
         />
       </div>
     </div>
-  </div>
+  </body>
   <!-- <div>
     {{ value }}
   </div> -->
@@ -215,14 +213,14 @@ export default {
       showTraits: true,
       defaultPercentage: 5,
       isReady: null,
-      value: {
-        file: { file: this.data?.file, cover: this.data?.cover } || null,
-        name: this.data?.name || null,
-        description: this.data?.description || null,
-        royalties: this.data?.royalties ? this.data?.royalties : 5,
-        traits: this.data?.traits || [],
-        wallets: this.data?.wallets || [],
-      },
+      // value: {
+      //   file: { file: this.data?.file, cover: this.data?.cover } || null,
+      //   name: this.data?.name || null,
+      //   description: this.data?.description || null,
+      //   royalties: this.data?.royalties ? this.data?.royalties : 5,
+      //   traits: this.data?.traits || [],
+      //   wallets: this.data?.wallets || [],
+      // },
       missing: {
         file: this.data?.file || { file: "empty", cover: "empty" },
         name: this.data?.name || "empty",
@@ -286,11 +284,6 @@ export default {
     },
   },
   methods: {
-    inputChange(valor,name){
-      this.missing[name] = valor;
-      const v = {...(this.data||{}), [name]:valor};
-      this.$emit("update:data",v);
-    },
     inputValue(e, type) {
       this.missing[type] = e;
     },
