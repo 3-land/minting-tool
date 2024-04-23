@@ -14,6 +14,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
+      //process: "process/browser",
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   }
