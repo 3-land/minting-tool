@@ -1,5 +1,5 @@
 <template>
-  <router-view />
+  <!-- <router-view /> -->
   <GeneralSettings v-if="!isReady" @nft_data="manageNft" :data="nft" />
   <Review
     v-if="isReady && !minted && edit"
@@ -18,6 +18,7 @@ export default {
   props: {},
   computed: {
     isReady() {
+      console.log(this.nft);
       if (this.nft != null && this.edit != false) return true;
       return false;
     },
@@ -27,8 +28,7 @@ export default {
       this.nft = data;
       this.edit = true;
     },
-    handleEdit(data) {
-      this.nft = data.data;
+    handleEdit() {
       this.edit = false;
     },
     uploadAsset(data) {

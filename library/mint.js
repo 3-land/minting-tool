@@ -122,11 +122,20 @@ export const createTree = async ({ payer, public_tree }) => {
     const tx = new Transaction();
     tx.add(...instructions);
 
+    tx.recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
+    tx.feePayer = payer;
+    tx.partialSign(...signers);
     const signature = await sendTransaction(tx, connection);
     return await connection.confirmTransaction(signature, { commitment: "confirmed" });
     // return tx;
 }
 
+/*
+    Parameters
+    @payer = public key for the wallet connected
+    @tree = merkle tree public key
+    @treeDelegate = public key for the merkle tree creator
+*/
 const compressNFT = async ({ payer, tree, treeDelegate }) => {
 
     const symbol = "Symbol";
@@ -139,6 +148,10 @@ const compressNFT = async ({ payer, tree, treeDelegate }) => {
     const offchainMetadataUri = "https://arweave.net/blabla";
 
     const sellerFeeBasisPoints = royalty * 100;
+
+    //Iterate over creator wallets and 
+    // find the wallet connected and add it to the array width verified true
+    // add all wallets in the wallets array but with verified false
 
     const creators = [
         { address: "blabla", verified: true, share: 100 }

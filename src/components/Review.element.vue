@@ -211,7 +211,7 @@ export default {
   },
   methods: {
     edit() {
-      this.$emit("edit", { data: this.nft_data, section: "edit" });
+      this.$emit("edit");
     },
     checkFileType(file) {
       return file.type.includes("image")

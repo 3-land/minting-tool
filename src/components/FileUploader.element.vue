@@ -82,6 +82,7 @@
         </div>
         <input
           type="file"
+          accept="image/*"
           ref="fileCoverInput"
           @change="onFileChange($event, true)"
           style="display: none"
