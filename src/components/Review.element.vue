@@ -23,19 +23,19 @@
           v-if="getType == 'image'"
           height="100%"
           width="100%"
-          :src="data.file.file.blob"
+          :src="nft_data.file.file.blob"
           style="border-radius: 4px"
         />
         <video
           v-if="getType == 'video'"
-          :src="data.file.file.blob"
+          :src="nft_data.file.file.blob"
           style="max-height: 100%; max-width: 100%"
           ref="video"
           controls
         />
         <audio
           v-if="getType == 'audio'"
-          :src="data.file.file.blob"
+          :src="nft_data.file.file.blob"
           ref="audio"
           controls
         />
@@ -43,7 +43,7 @@
           <TresPerspectiveCamera :args="[45, 120, 0.1, 1000]" />
           <OrbitControls />
           <Suspense>
-            <GLTFModel :path="data.file.file.blob" draco />
+            <GLTFModel :path="nft_data.file.file.blob" draco />
           </Suspense>
           <TresDirectionalLight
             :position="[-4, 8, 4]"
@@ -63,7 +63,7 @@
         "
       >
         <img
-          :src="data.file.cover.blob"
+          :src="nft_data.file.cover.blob"
           style="max-width: 100%; max-height: 100%; border-radius: 4px"
         />
       </div>
@@ -90,9 +90,9 @@
           />
         </div>
         <span style="width: 100%; padding-left: 24px; font-size: 20px">{{
-          data.name
+          nft_data.name
         }}</span>
-        <span style="padding: 24px">{{ data.description }}</span>
+        <span style="padding: 24px">{{ nft_data.description }}</span>
       </div>
       <div
         style="border-top: 1px solid lightgray; width: 100%; padding-top: 24px"
@@ -111,8 +111,8 @@
         <div style="display: flex; flex-wrap: wrap">
           <div
             style="padding: 24px"
-            v-for="(item, index) in data.traits"
-            v-if="data.traits.length > 0"
+            v-for="(item, index) in nft_data.traits"
+            v-if="nft_data.traits.length > 0"
           >
             <div
               style="
@@ -132,7 +132,7 @@
               {{ item.name }}
             </div>
           </div>
-          <div v-if="data.traits.length == 0">
+          <div v-if="nft_data.traits.length == 0">
             <span
               style="
                 padding-left: 24px;
@@ -150,7 +150,7 @@
         <span style="padding: 24px; color: rgba(30, 30, 30, 0.5)"
           >Collaboration</span
         >
-        <div style="padding: 24px" v-for="(item, index) in data.wallets">
+        <div style="padding: 24px" v-for="(item, index) in nft_data.wallets">
           <span
             style="
               background-color: black;
@@ -176,16 +176,26 @@
       @click="mintAsset()"
     />
   </div>
-  <div v-if="showPopUp" class="popup-main-container">
+  <!-- <div v-if="showPopUp" class="popup-main-container">
     <PopUp
       title="This is the title"
       content="This is the very important content that gives context"
       button_msg="Procced"
       @action="proceed"
     />
-  </div>
+  </div> -->
   <div v-if="loading" class="loader-container">
     <span class="loader"></span>
+    <span
+      style="
+        position: absolute;
+        top: 30%;
+        color: white;
+        font-size: 24px;
+        font-weight: bolder;
+      "
+      >Uploading your assets to arweave...</span
+    >
   </div>
 </template>
 <script>
@@ -205,6 +215,8 @@ export default {
   },
   computed: {
     getType() {
+      console.log(this.data);
+      console.log(this.nft_data);
       const type = this.checkFileType(this.data.file.file);
       return type;
     },
@@ -224,8 +236,10 @@ export default {
         ? "3d"
         : null;
     },
-    mintAsset() {
-      this.showPopUp = true;
+    async mintAsset() {
+      this.loading = true;
+      await this.sleep(5000);
+      this.$emit("mint", this.data);
       // if (!showPopUp) {
       //   this.$emit("mint", this.data);
       // }

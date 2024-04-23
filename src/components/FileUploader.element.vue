@@ -12,10 +12,10 @@
           border: error ? '2px dashed red' : '1px dashed rgba(0, 0, 0, 0.2)',
         }"
       >
-        <span v-if="fileType == null">Upload Your File</span>
+        <span v-if="value == null">Upload Your File</span>
         <img
-          v-if="fileType == 'image'"
-          :src="value.file.blob || fileSrc.blob"
+          v-if="checkFileType(value?.file) == 'image'"
+          :src="value?.file?.blob"
           alt="Uploaded file thumbnail"
         />
         <video
@@ -74,8 +74,8 @@
               : '1px dashed rgba(0, 0, 0, 0.2)',
           }"
         >
-          <span v-if="!coverFileSrc">Upload the cover</span>
-          <img :src="coverFileSrc.blob" />
+          <span v-if="!value.cover">Upload the cover</span>
+          <img :src="value.cover?.blob" />
         </div>
         <div v-if="error_cover" style="color: red; display: flex">
           <span class="alert-container" />Missing Field
@@ -121,6 +121,15 @@ export default {
       },
       deep: true,
     },
+  },
+  mounted() {
+    // console.log(this.fileType);
+    // this.fileType = this.checkFileType(this.value?.file);
+    // console.log(this.fileType);
+    // console.log("hi");
+    // console.log(this.value);
+    // console.log(this.value.file);
+    // console.log(this.value.file.blob);
   },
   methods: {
     openFileExplorer(cover) {
@@ -194,15 +203,17 @@ export default {
       }
     },
     checkFileType(file) {
-      this.fileType = file.type.includes("image")
+      var file_data = file?.type?.includes("image")
         ? "image"
-        : file.type.includes("audio")
+        : file?.type?.includes("audio")
         ? "audio"
-        : file.type.includes("video")
+        : file?.type?.includes("video")
         ? "video"
-        : file.name.includes(".glb")
+        : file?.name?.includes(".glb")
         ? "3d"
         : null;
+      this.fileType = file_data;
+      return file_data;
     },
   },
 };
@@ -229,7 +240,7 @@ export default {
 .thumbnail {
   border-radius: 16px;
   /* height: 100%; */
-  height: 317px;
+  /* height: 317px; */
   /* width: 100%; */
   width: 300px;
   align-items: center;

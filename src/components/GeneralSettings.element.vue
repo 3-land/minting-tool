@@ -12,14 +12,15 @@
     <span style="font-size: 14px">Create a cNFT</span>
     <div class="section-line" />
   </header>
-  <body class="body_container">
+  <div class="body_container">
     <div class="file-container">
       <span style="font-size: 24px; width: 100%">Details</span>
       <FileUploader
         style="width: 100%"
-        v-model:value="value?.file"
+        :value="data.file"
+        @update:value="inputChange($event, 'file')"
         :error="hasFile ? false : true"
-        :error_cover="hasCover ? false : true"
+        :error_cover="data.file?.cover ? false : true"
       />
     </div>
     <div class="general-container">
@@ -34,21 +35,21 @@
         <div class="input-container">
           <label>Name of your NFT<span style="color: #f23d4f">*</span></label>
           <InputBox
-            v-model:value="value.name"
+            :value="data?.name"
+            @update:value="inputChange($event, 'name')"
             class="input-item"
             placeholder="Artwork title"
-            @update:value="inputValue($event, 'name')"
             :error="missing.name ? false : true"
           />
         </div>
         <div class="input-container">
           <label>Description<span style="color: #f23d4f">*</span></label>
           <InputBox
-            v-model:value="value.description"
+            :value="data?.description"
             type="textarea"
             class="input-item"
             placeholder="Description for your art"
-            @update:value="inputValue($event, 'description')"
+            @update:value="inputChange($event, 'description')"
             :error="missing.description ? false : true"
           />
         </div>
@@ -62,9 +63,9 @@
             class="input-item"
             type="number"
             style="width: 45%"
-            :defaultValue="defaultPercentage"
+            :value="data?.royalties"
+            @update:value="inputChange($event, 'royalties')"
             :step="5"
-            v-model:value="value.royalties"
           />
         </div>
         <div class="input-container">
@@ -197,8 +198,11 @@
         />
       </div>
     </div>
-  </body>
+  </div>
   <!-- <div>
+    {{ missing }}
+  </div>
+  <div>
     {{ value }}
   </div> -->
 </template>
@@ -213,21 +217,21 @@ export default {
       showTraits: true,
       defaultPercentage: 5,
       isReady: null,
-      // value: {
-      //   file: { file: this.data?.file, cover: this.data?.cover } || null,
-      //   name: this.data?.name || null,
-      //   description: this.data?.description || null,
-      //   royalties: this.data?.royalties ? this.data?.royalties : 5,
-      //   traits: this.data?.traits || [],
-      //   wallets: this.data?.wallets || [],
-      // },
+      value: {
+        file: { file: this.data?.file, cover: this.data?.cover } || null,
+        name: this.data?.name || null,
+        description: this.data?.description || null,
+        royalties: this.data?.royalties ? this.data?.royalties : 5,
+        traits: this.data?.traits || [],
+        wallets: this.data?.wallets || [],
+      },
       missing: {
-        file: this.data?.file || { file: "empty", cover: "empty" },
-        name: this.data?.name || "empty",
-        description: this.data?.description || "empty",
-        royalties: this.data?.royalties || "empty",
-        traits: this.data?.traits || [{ name: "empty", value: "empty" }],
-        wallets: this.data?.wallets || [{ address: "empty", royalty: "empty" }],
+        file: { file: "empty", cover: "empty" },
+        name: "empty",
+        description: "empty",
+        royalties: "empty",
+        traits: [{ name: "empty", value: "empty" }],
+        wallets: [{ address: "empty", royalty: "empty" }],
       },
     };
   },
@@ -249,11 +253,14 @@ export default {
       return false;
     },
     hasCover() {
+      console.log("im");
       if (this.value?.file?.file != null || this.missing?.file?.file != null) {
         if (
-          this.value?.file?.cover != "" &&
+          this.data?.file?.cover != "" &&
           this.missing?.file.cover == "empty"
         ) {
+          console.log("im");
+
           return true;
         }
       }
@@ -284,6 +291,12 @@ export default {
     },
   },
   methods: {
+    inputChange(valor, name) {
+      this.missing[name] = valor;
+      this.value[name] = valor;
+      const v = { ...(this.data || {}), [name]: valor };
+      this.$emit("update:data", v);
+    },
     inputValue(e, type) {
       this.missing[type] = e;
     },

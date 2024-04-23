@@ -18,6 +18,8 @@
         justify-content: center;
         margin-top: 35px;
         max-width: 390px;
+        flex-direction: column;
+        gap: 24px;
       "
     >
       <div
@@ -26,6 +28,8 @@
           padding: 8px;
           border-radius: 16px;
           box-shadow: 0px 4px 8.6px 0px rgba(0, 0, 0, 0.15);
+          display: flex;
+          justify-content: center;
         "
       >
         <img
@@ -63,6 +67,21 @@
             cast-shadow
           />
         </TresCanvas>
+      </div>
+      <div
+        v-if="getType == 'video' || getType == 'audio'"
+        style="
+          border: 1px dashed rgb(30, 30, 30, 0.5);
+          border-radius: 4px;
+          width: 100%;
+          display: flex;
+          justify-content: center;
+        "
+      >
+        <img
+          :src="data.cover.blob"
+          style="max-width: 100%; max-height: 100%; border-radius: 4px"
+        />
       </div>
     </div>
   </div>

@@ -1,32 +1,42 @@
 <template>
   <!-- <router-view /> -->
-  {{ nft }}
-  <GeneralSettings v-if="!isReady" v-model:data="nft" />
+  <!-- {{ nft }} -->
+  <GeneralSettings v-if="!isReady" v-model:data="nft" @nft_data="manageNft" />
   <Review
     v-if="isReady && !minted && edit"
-    v-model:data="nft"
+    v-model:nft_data="nft"
     @mint="uploadAsset"
     @edit="handleEdit"
   />
-  <Congratulations v-if="minted" v-model:data="nft" :file="minted" />
+  <Congratulations v-if="minted" v-model:file="nft.file" :file="minted" />
 </template>
 <script>
 export default {
   mixins: [],
   data() {
-    return { nft: { name: "Hola" }, minted: null, edit: false };
+    return {
+      nft: {
+        file: null,
+        name: null,
+        description: null,
+        royalties: 5,
+        traits: [],
+        wallets: [],
+      },
+      minted: null,
+      edit: false,
+    };
   },
   props: {},
   computed: {
     isReady() {
-      console.log(this.nft);
       if (this.nft != null && this.edit != false) return true;
       return false;
     },
   },
   methods: {
     manageNft(data) {
-      this.nft = data;
+      // this.nft = data;
       this.edit = true;
     },
     handleEdit() {
