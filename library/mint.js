@@ -2,9 +2,11 @@
 // import { uuid4 } from "@/services/app";
 
 // import { useWallet } from 'solana-wallets-vue';
-import { Connection, Keypair, PublicKey, SystemProgram } from '@solana/web3.js';
+import { Connection, Keypair, PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
 
 import { MintLayout, getAssociatedTokenAddress, createAssociatedTokenAccountInstruction, createMintToInstruction, createInitializeMintInstruction, createBurnInstruction, getAccount } from '@solana/spl-token';
+
+import { useWallet } from "solana-wallets-vue";
 
 
 import {
@@ -66,9 +68,11 @@ import {
 
 // import { Keypair, PublicKey } from "@solana/web3.js";
 
-export const createTree = async ({ payer, public_data }) => {
+export const createTree = async ({ payer, public_tree }) => {
+    const { sendTransaction } = useWallet();
 
-    public_data = public_data ?? true;
+
+    public_tree = public_tree ?? true;
     payer = toPublicKey(payer);
 
     const connection = createConnection();
@@ -80,7 +84,9 @@ export const createTree = async ({ payer, public_data }) => {
     const maxBufferSize = 64;
 
     const maxDepthSizePair = { maxDepth, maxBufferSize };
-    const canopyDepth = 8;
+    const canopyDepth = 4;
+
+    console.log(merkleTreeKeypair.publicKey.toBase58())
 
     const allocTreeIx = await createAllocTreeIx(
         connection,
@@ -104,7 +110,7 @@ export const createTree = async ({ payer, public_data }) => {
     const createTreeIxArgs = {
         maxDepth: maxDepthSizePair.maxDepth,
         maxBufferSize: maxDepthSizePair.maxBufferSize,
-        public_data,
+        public: public_tree,
     };
     const createTreeIx = createCreateTreeInstruction(
         createTreeIxAccounts,
@@ -112,8 +118,13 @@ export const createTree = async ({ payer, public_data }) => {
     );
 
     const instructions = [allocTreeIx, createTreeIx];
-    return instructions;
 
+    const tx = new Transaction();
+    tx.add(...instructions);
+
+    const signature = await sendTransaction(tx, connection);
+    return await connection.confirmTransaction(signature, { commitment: "confirmed" });
+    // return tx;
 }
 
 const compressNFT = async ({ payer, tree, treeDelegate }) => {
@@ -186,7 +197,7 @@ export const toPublicKey = (key) => {
 };
 
 const createConnection = () => {
-    return new Connection("RPC_URL", { commitment: "confirmed", confirmTransactionInitialTimeout: (60 * 2 * 1000) }) //creo que confirmTransactionInitialTimeout ya no se usa
+    return new Connection("https://devnet.helius-rpc.com/?api-key=6b236027-5ab9-41d9-b516-d6f0b5a5286e", { commitment: "confirmed", confirmTransactionInitialTimeout: (60 * 2 * 1000) }) //creo que confirmTransactionInitialTimeout ya no se usa
 }
 
 const crearNFT = async ({ owner, files, thumbnail }) => {

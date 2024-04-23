@@ -24,8 +24,10 @@ export default {
   },
   methods: {
     test_mint() {
-      const { publicKey } = useWallet();
-      payer = publicKey.value;
+      const { publicKey, sendTransaction } = useWallet();
+      const payer = publicKey.value;
+      const tree = createTree({ payer: publicKey.value, public_tree: true });
+      console.log(tree);
       console.log(payer);
     },
   },
