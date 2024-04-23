@@ -1,5 +1,5 @@
-export class AccountManager extends generalBase {
-    hashManager = new queueManager();
+export class AccountManager {
+    // hashManager = new queueManager();
     async getAccountFrom(hash) {
 
         const table = await storage.table("user_info");

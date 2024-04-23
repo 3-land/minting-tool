@@ -7,7 +7,7 @@
 </template>
 <script>
 import { useWallet } from "solana-wallets-vue";
-import { createTree } from "../../library/mint";
+import { createTree } from "@/../library/mint";
 
 export default {
   mixins: [],

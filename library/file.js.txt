@@ -1,7 +1,7 @@
 import { generalBase, queueManager, sleep } from './base';
 
 
-export class FileService extends generalBase {
+export class FileService {
 
     flushBucket({ type }) {
         let limite = 5000;
@@ -1163,9 +1163,9 @@ export class FileService extends generalBase {
 }
 
 export const file = new FileService();
-file.getAverageColor = getAverageColor;
+file.getAverageColor = '';
 file.modelColors = {};
-window.galatic05.file = file;
+// window.galatic05?.file = "file";
 
 file.parseGIF = async (blob) => {
 

@@ -1,8 +1,8 @@
-import { init as Irys } from "./irys";
+// import { init as Irys } from "./irys";
 // import { uuid4 } from "@/services/app";
 
-import { useWallet } from 'solana-wallets-vue';
-import { Connection, clusterApiUrl, Keypair, PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
+// import { useWallet } from 'solana-wallets-vue';
+import { Connection, Keypair, PublicKey, SystemProgram } from '@solana/web3.js';
 
 import { MintLayout, getAssociatedTokenAddress, createAssociatedTokenAccountInstruction, createMintToInstruction, createInitializeMintInstruction, createBurnInstruction, getAccount } from '@solana/spl-token';
 
@@ -252,25 +252,25 @@ const crearNFT = async ({ owner, files, thumbnail }) => {
 
 
 
-    const irys = await Irys();
-    signers.push(irys.wallet);
+    // const irys = await Irys();
+    // signers.push(irys.wallet);
 
-    //hacer for por cada archivo
-    const bundledFile = await irys.bundle(blob); //Cada archivo que quieres subir a arweave, debe pasar por esta funcion
-    const irysURL = bundledFile.url; //Esto va a tener https://arweave.net/blabla
+    // //hacer for por cada archivo
+    // const bundledFile = await irys.bundle(blob); //Cada archivo que quieres subir a arweave, debe pasar por esta funcion
+    // const irysURL = bundledFile.url; //Esto va a tener https://arweave.net/blabla
 
-    const uuid = uuid4(); //Generate a random identifier
-    const bundledFiles = [bundledFile]; //Todos los archivos se ponen un un arreglo
+    // const uuid = uuid4(); //Generate a random identifier
+    // const bundledFiles = [bundledFile]; //Todos los archivos se ponen un un arreglo
 
-    const irysIX = await irys.getFundingInstructions({ files: bundledFiles }); //Se calcula el costo y se crean las instrucciones
-    const irysRegistration = await irys.registerFiles({ files: bundledFiles, uuid }); //Se registran los archivos para subirse
+    // const irysIX = await irys.getFundingInstructions({ files: bundledFiles }); //Se calcula el costo y se crean las instrucciones
+    // const irysRegistration = await irys.registerFiles({ files: bundledFiles, uuid }); //Se registran los archivos para subirse
 
-    instructions.push(...irysIX.instructions);
+    // instructions.push(...irysIX.instructions);
 
-    const transaction = new Transaction();
-    transaction.add(...instructions);
+    // const transaction = new Transaction();
+    // transaction.add(...instructions);
 
-    transaction.partialSign(...signers); //firmar con Irys y MintKeypair
+    // transaction.partialSign(...signers); //firmar con Irys y MintKeypair
 
 
     //Enviar la transaccion con la libreria de wallet adapter

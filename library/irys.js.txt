@@ -1,16 +1,5 @@
-import { WebIrys } from '@irys/sdk';
-import { generalBase, sleep } from './base';
-import { getProvider } from "./solana";
 import { toPublicKey } from "./mint";
-import { storage } from "./storage";
 import { file } from "./file";
-import { account } from "./account";
-import { nowS, cyrb53 } from "./shared";
-import { app_info } from "./config";
-import crypto from "crypto";
-
-
-
 
 import { SystemProgram, Keypair } from "@solana/web3.js";
 
@@ -36,9 +25,9 @@ function blobToBase64(blob) {
         reader.readAsDataURL(blob);
     });
 }
-const irys_network = app_info.dev ? "https://devnet.irys.xyz" : "https://node2.irys.xyz";
+const irys_network = "https://devnet.irys.xyz";
 
-export class IrysHelper extends generalBase {
+export class IrysHelper {
     async verifyBalance(id) {
         try {
             const submited = await this.irys.funder.submitTransaction(id);
@@ -62,7 +51,7 @@ export class IrysHelper extends generalBase {
             const irys_wallet = this.irys.address;
             const data = await file.arrayBuffer();
             const b = await blobToBase64(file);
-            const proof = cyrb53(b);
+            const proof = "KJSDLFAJS;FLKAJ;DFLKJA;SDLKFJPAD";
 
             let transaction = this.irys.createTransaction(data, { anchor: nonce, tags })
             const { size } = transaction;
@@ -155,7 +144,7 @@ export class IrysHelper extends generalBase {
         if (!files?.[0]) return false;
 
         const saved_signature = files?.[0]?.transaction ? (JSON.parse(files?.[0]?.transaction)?.[0] || null) : null
-        const values = { tried_at: nowS() };
+        const values = { tried_at: Date.now() / 1000 };
         if (saved_signature) {
             await this.verifyBalance(saved_signature)
         } else if (signature) {
@@ -201,7 +190,7 @@ export class IrysHelper extends generalBase {
                 const subida = await bundled.irys.transaction.upload();
                 if (subida) {
                     succeeds.push(bundled.irys.id);
-                    const data = { ..._file.data, fee_at_submit: bundled.price, uploaded_at: nowS() };
+                    const data = { ..._file.data, fee_at_submit: bundled.price, uploaded_at: Date.now() / 1000 };
                     await table.set({ status: "uploaded", data, id: _file.id }, "id", true);
                 } else {
                     throw "";
@@ -210,7 +199,7 @@ export class IrysHelper extends generalBase {
                 const error = e + "";
                 if (error.includes("already received")) {
                     succeeds.push(bundled.irys.id);
-                    const data = { ..._file.data, fee_at_submit: bundled.price, uploaded_at: nowS() };
+                    const data = { ..._file.data, fee_at_submit: bundled.price, uploaded_at: Date.now() / 1000 };
                     await table.set({ status: "uploaded", data, id: _file.id }, "id", true);
                 } else {
                     errors.push(_file.id);
@@ -246,7 +235,7 @@ export class IrysHelper extends generalBase {
         for (const [index, _file] of files.entries()) {
             const arweave = _file.irys.id;
             const data = { type: _file.type, nonce: _file.irys.nonce, size: _file.irys.size, fee_at_submit: _file.irys.price, slippage_fee: _file.irys.slippage_fee }
-            const tosave = { owner, arweave, uuid, status: "waiting", date: nowS(), data, payload: _file.payload };
+            const tosave = { owner, arweave, uuid, status: "waiting", date: Date.now() / 1000, data, payload: _file.payload };
             await file.saveFile(_file, this.arweaveToID(arweave))
             await table.dexie.put(tosave);
         }
