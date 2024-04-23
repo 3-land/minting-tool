@@ -1,5 +1,5 @@
 <template>
-  <!-- <router-view /> -->
+  <router-view />
   <!-- {{ nft }} -->
   <GeneralSettings v-if="!isReady" v-model:data="nft" @nft_data="manageNft" />
   <Review
