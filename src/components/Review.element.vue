@@ -249,8 +249,8 @@ export default {
       this.process_msg = "Uploading your assets to arweave...";
       this.loading = true;
       await this.sleep(5000);
-      const meta_data =
-        "https://5232s7wjkt2frnyg6hvpsgp3deo4e4vf3tvqkz5hmeyzyw2cvwtq.arweave.net/7repfslU9Fi3BvHq-Rn7GR3CcqXc6wVnp2ExnFtCrac";
+      // const meta_data =
+      //   "https://5232s7wjkt2frnyg6hvpsgp3deo4e4vf3tvqkz5hmeyzyw2cvwtq.arweave.net/7repfslU9Fi3BvHq-Rn7GR3CcqXc6wVnp2ExnFtCrac";
 
       /* Mints the Nft */
       const { publicKey, sendTransaction } = useWallet();
@@ -259,18 +259,22 @@ export default {
       const tree = "4k7xBH9oZhXn3Y1pvB6bdubTpbRkmg3S8XhfgvLf7NNN";
       const creators = this.nft_data.wallets;
 
-      console.log(creators);
+      const meta_data = {
+        name: this.nft_data.name,
+        description: this.nft_data.description,
+        traits: this.nft_data.traits,
+        royalties: this.nft_data.royalties,
+      };
+
+      // console.log(creators);
 
       const compressed = await compressNFT({
         payer: payer,
         tree: tree,
         treeDelegate: payer,
-        metadataUrl: meta_data,
+        metadata: meta_data,
         creatorWallets: creators,
       });
-
-      console.log("-- compressed --");
-      console.log(compressed);
 
       this.process_msg = "Minting your NFT...";
       await this.sleep(5000);

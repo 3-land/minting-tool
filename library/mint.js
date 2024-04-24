@@ -137,7 +137,7 @@ export const createTree = async ({ payer, public_tree }) => {
     @tree = merkle tree public key
     @treeDelegate = public key for the merkle tree creator
 */
-export const compressNFT = async ({ payer, tree, treeDelegate, metadataUrl, creatorWallets }) => {
+export const compressNFT = async ({ payer, tree, treeDelegate, metadata, creatorWallets }) => {
 
     const uuid = "random_uuid_per_upload_session";
 
@@ -151,10 +151,10 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadataUrl, crea
     payer = toPublicKey(payer);
     treeDelegate = treeDelegate ? toPublicKey(treeDelegate) || payer : '';
 
-    const offchainMetadataUri = metadataUrl;
+    // const offchainMetadataUri = metadataUrl;
     // const offchainMetadataUri = "https://arweave.net/blabla";
 
-    const royalty = 0.5;
+    const royalty = metadata.royalties;
 
     let sellerFeeBasisPoints = royalty * 100;
     sellerFeeBasisPoints = new BN(sellerFeeBasisPoints);
@@ -166,7 +166,7 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadataUrl, crea
 
 
     const creators = creatorWallets.map(item => {
-        if (item.address === payer.toBase58()) {
+        if (item.address.toBase58() === payer.toBase58()) {
             return { address: item.address, share: item.royalty, verified: true };
         } else {
             return { address: item.address, share: item.royalty, verified: false }
@@ -188,11 +188,23 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadataUrl, crea
     signers.push(irys.wallet);
 
 
+    let traits = metadata.traits.map((item) => {
+        return {
+            ...item,
+            trait_type: item.name
+        };
+    });
+    traits = traits.map(item => {
+        delete item.name;
+        return item;
+    });
 
+    console.log("-- traits --")
+    console.log(traits)
 
     const offchain_metadata = {
-        name,
-        description: "Description 1",
+        name: metadata.name,
+        description: metadata.description,
         seller_fee_basis_points: sellerFeeBasisPoints,
         symbol,
         properties: {
@@ -201,7 +213,7 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadataUrl, crea
         },
         //animation_url:"https://arweave.net/asdasd", //animation_url (para cuando es video, 3d, audio, o html)
         image: "https://arweave.net/k3_OCOHRni9XDO3VTbTvMvmWMdThkYynHoWYZyRe7_0?ext=png",  //image
-        attributes: [{ value: "Small", trait_type: "Size" }],
+        attributes: traits,
         category: "image" //image, video, audio, html, vr (se usa vr para modelos 3D)
     };
 
@@ -216,7 +228,7 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadataUrl, crea
     const irys_ix = await irys.getFundingInstructions({ files: irys_files }); //Se calcula el costo y se crean las instrucciones
     const irys_registration = await irys.registerFiles({ files: irys_files, uuid }); //Se registran los archivos para subirse
 
-console.log("SUBIENDO A",irys_url)
+    console.log("SUBIENDO A", irys_url)
     const onchain = {
         name,
         symbol,
@@ -263,15 +275,15 @@ console.log("SUBIENDO A",irys_url)
 
     const tx = new Transaction();
     tx.add(...irys_ix.instructions, ...instructions);
-console.log("tx",tx);
+    console.log("tx", tx);
     tx.recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
     tx.feePayer = payer;
     tx.partialSign(...signers);
     const signature = await sendTransaction(tx, connection);
     console.log(signature)
     const sent = await connection.confirmTransaction(signature, { commitment: "confirmed" });
-    
-    irys.uploadFiles({ uuid, signature, files:irys_files })
+
+    irys.uploadFiles({ uuid, signature, files: irys_files })
 
 }
 
