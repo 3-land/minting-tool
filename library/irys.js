@@ -36,6 +36,12 @@ function blobToBase64(blob) {
 
 const irys_network = true ? "https://devnet.irys.xyz" : "https://node2.irys.xyz";
 
+/*function generateRandomBytes(length) {
+  var values = new Uint8Array(length);
+  window.crypto.getRandomValues(values);
+  return values;
+}*/
+
 export class IrysHelper {
 	async verifyBalance(id) {
 		try {
@@ -70,7 +76,7 @@ export class IrysHelper {
 			if (!id) throw "No id";
 			const url = "https://arweave.net/" + id + ((extension && !file.is_metadata && !is_metadata) ? ("?ext=" + extension) : "");
 			file.payload = false;
-			file.irys = { id, size, url, proof, extension, nonce, transaction, irys_wallet, price: price.toNumber(), slippage_fee }
+			file.irys = { id, size, url, extension, nonce, transaction, irys_wallet, price: price.toNumber(), slippage_fee }
 			return file;
 		} catch (e) {
 			console.log("ERRORE", e);
@@ -86,7 +92,7 @@ export class IrysHelper {
 	}
 
 	async getFundingInstructions({ files, payer }) {
-
+console.log("FILES",files);
 		if (!payer) payer = this.owner;
 
 		let bytes = 0;
@@ -179,23 +185,23 @@ export class IrysHelper {
 				continue;
 			}
 
-			const saved = this.files_bridge[this.arweaveToID(_file.arweave)];
-
-			const blob = saved?.file;
+			const blob = this.files_bridge[this.arweaveToID(_file.irys.id)];
 
 			//const blob = (await file.readFile(this.arweaveToID(_file.arweave)))?.file;
-			blob.nonce = _file.data.nonce;
+			blob.nonce = _file.irys.nonce;
 			if (!blob) {
-				errors.push(_file.id);
+				errors.push(_file.irys.id);
 				continue;
 			}
+			blob.nonce = _file.irys.nonce;
 			const bundled = await this.bundle(blob);
 			if (succeeds.includes(bundled.irys.id)) {
 				succeeds.push(bundled.irys.id);
 				continue;
 			}
-			if (!bundled || bundled.irys.id != _file.arweave) {
+			if (!bundled || bundled.irys.id != _file.irys.id) {
 				errors.push(_file.id);
+				
 				continue;
 			}
 			try {
@@ -210,9 +216,10 @@ export class IrysHelper {
 				}
 			} catch (e) {
 				const error = e + "";
+				console.log("Error",e);
 				if (error.includes("already received")) {
 					succeeds.push(bundled.irys.id);
-					const data = { ..._file.data, fee_at_submit: bundled.price, uploaded_at: nowS() };
+					//const data = { ..._file.data, fee_at_submit: bundled.price, uploaded_at: nowS() };
 					//Marks in local storage as uploaded, so you don't retry uploading
 					//await table.set({status:"uploaded",data,id:_file.id},"id",true);
 				} else {
@@ -292,28 +299,28 @@ export class IrysHelper {
 
 
 
-		this.irys = new WebIrys({ url: irys_network, network: 'devnet', token: "solana", wallet: { provider } });
+		this.irys = new WebIrys({ url: irys_network, token: "solana", wallet: { rpcUrl:"https://devnet.helius-rpc.com/?api-key=6b236027-5ab9-41d9-b516-d6f0b5a5286e", provider } });
 		await this.irys.ready();
 		const to = await this.irys.utils.getBundlerAddress("solana");
 		const bal = await this.getBalance();
 		console.log("Irys address:", to);
 		console.log("Irys balance:", bal.toNumber());
 
-		this.uploadFiles({ uuid: "e1d413a1-bc3c-4113-a225-616ffb05857f", signature: "j2EcvTvrbxyA7uqK5K1bVqpZmMgCmVNigWEoKENGQxBdnzFhddV4eyic52B451NxiNXGXzLbJEjCBp4w7bx5bQy" })
+		//this.uploadFiles({ uuid: "e1d413a1-bc3c-4113-a225-616ffb05857f", signature: "j2EcvTvrbxyA7uqK5K1bVqpZmMgCmVNigWEoKENGQxBdnzFhddV4eyic52B451NxiNXGXzLbJEjCBp4w7bx5bQy" })
 
 		return true;
 	}
 }
 
 let global = false;
-export const init = async () => {
+export const init = async (address) => {
 	if (global) {
 		const g = await global.sync();
 		if (!g) global = null;
 		return global;
 	}
 	global = new IrysHelper();
-	const g = await global.init();
+	const g = await global.init(address);
 	if (!g) global = null;
 	return global;
 }

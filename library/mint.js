@@ -184,7 +184,7 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadataUrl, crea
 
     const signers = [];
 
-    const irys = await Irys();
+    const irys = await Irys(payer.toBase58());
     signers.push(irys.wallet);
 
 
@@ -208,15 +208,15 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadataUrl, crea
     const metadata_file = new Blob([JSON.stringify(offchain_metadata)], { type: "application/json" });
 
 
-    const bundled_metadata_file = await irys.bundle(json_file); //Cada archivo que quieres subir a arweave, debe pasar por esta funcion
-    const irys_url = bundled_metadata_file.url; //Esto va a tener https://arweave.net/blabla
+    const bundled_metadata_file = await irys.bundle(metadata_file, true /*aqui es true porque es metadata, para imagenes usar false*/); //Cada archivo que quieres subir a arweave, debe pasar por esta funcion
+    const irys_url = bundled_metadata_file.irys.url; //Esto va a tener https://arweave.net/blabla
 
     const irys_files = [bundled_metadata_file];
 
     const irys_ix = await irys.getFundingInstructions({ files: irys_files }); //Se calcula el costo y se crean las instrucciones
     const irys_registration = await irys.registerFiles({ files: irys_files, uuid }); //Se registran los archivos para subirse
 
-
+console.log("SUBIENDO A",irys_url)
     const onchain = {
         name,
         symbol,
@@ -262,14 +262,16 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadataUrl, crea
     // const instructions = [];
 
     const tx = new Transaction();
-    tx.add(...irys_ix, ...instructions);
-
+    tx.add(...irys_ix.instructions, ...instructions);
+console.log("tx",tx);
     tx.recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
     tx.feePayer = payer;
     tx.partialSign(...signers);
     const signature = await sendTransaction(tx, connection);
     console.log(signature)
-    return await connection.confirmTransaction(signature, { commitment: "confirmed" });
+    const sent = await connection.confirmTransaction(signature, { commitment: "confirmed" });
+    
+    irys.uploadFiles({ uuid, signature, files:irys_files })
 
 }
 

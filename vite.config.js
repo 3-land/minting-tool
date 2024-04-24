@@ -14,7 +14,8 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      //process: "process/browser",
+      crypto: "crypto-browserify",
+      stream: "stream-browserify",
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   }
