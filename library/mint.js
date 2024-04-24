@@ -244,7 +244,7 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadata, creator
     const bundled_metadata_file = await irys.bundle(metadata_file, true /*aqui es true porque es metadata, para imagenes usar false*/); //Cada archivo que quieres subir a arweave, debe pasar por esta funcion
     const irys_url = bundled_metadata_file.irys.url; //Esto va a tener https://arweave.net/blabla
 
-    const irys_files = [bundled_metadata_file];
+    const irys_files = [bundled_metadata_file, metadata_file_url, metadata_cover_url];
 
     const irys_ix = await irys.getFundingInstructions({ files: irys_files }); //Se calcula el costo y se crean las instrucciones
     const irys_registration = await irys.registerFiles({ files: irys_files, uuid }); //Se registran los archivos para subirse
