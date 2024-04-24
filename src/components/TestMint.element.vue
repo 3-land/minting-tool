@@ -30,8 +30,7 @@ export default {
       const payer = publicKey.value;
       //const tree = createTree({ payer: publicKey.value, public_tree: true });
       const tree = "4k7xBH9oZhXn3Y1pvB6bdubTpbRkmg3S8XhfgvLf7NNN";
-      const metadata_url =
-        "https://jbughicttwzif2sjx4ypbpmuw6phnmmwz7llxzjcjjgiealtluka.arweave.net/SGhjoFOdsoLqSb8w8L2Ut552sZbP1rvlIkpMggFzXRQ";
+      const metadata_url = "https://arweave.net/SGhjoFOdsoLqSb8w8L2Ut552sZbP1rvlIkpMggFzXRQ";
       const creators = [
         {
           address: "77DqG6ve3yqc9THEapataFE9sPA7TftH7Mg7D3dmT2C3",

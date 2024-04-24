@@ -8,6 +8,7 @@ import { MintLayout, getAssociatedTokenAddress, createAssociatedTokenAccountInst
 
 import { useWallet } from "solana-wallets-vue";
 
+import { toPublicKey } from "./misc";
 
 import {
     createUpdateMetadataAccountInstruction,
@@ -137,6 +138,9 @@ export const createTree = async ({ payer, public_tree }) => {
     @treeDelegate = public key for the merkle tree creator
 */
 export const compressNFT = async ({ payer, tree, treeDelegate, metadataUrl, creatorWallets }) => {
+  
+  const uuid = "random_uuid_per_upload_session";
+  
     const { sendTransaction } = useWallet();
     const connection = createConnection();
 
@@ -158,21 +162,17 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadataUrl, crea
     //Iterate over creator wallets and 
     // find the wallet connected and add it to the array with verified true
     // add all wallets in the wallets array but with verified false
-
-    const creators = [
-    ];
-
-    creatorWallets.map(item => {
+    
+    
+    
+    const creators = creatorWallets.map(item => {
         if (item.address === payer.toBase58()) {
-            creators.push({ address: item.address, share: item.royalty, verified: true });
+            return { address: item.address, share: item.royalty, verified: true };
         } else {
-            creators.push({ address: item.address, share: item.royalty, verified: false })
+            return { address: item.address, share: item.royalty, verified: false }
         }
     })
-    console.log(creators)
-    creators.map(item => {
-        item.address = toPublicKey(item.address);
-    });
+    
 
     // console.log('-- payer --')
     // console.log(payer.toBase58())
@@ -181,13 +181,48 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadataUrl, crea
     // console.log("*****")
 
     const isMutable = false;
+    
+    const signers = [];
+    
+    const irys = await Irys();
+    signers.push(irys.wallet);
+    
+    
+    
+    
+    const offchain_metadata = {
+        name,
+        description:"Description 1",
+        seller_fee_basis_points: sellerFeeBasisPoints,
+        symbol,
+        properties: {
+            files: [{type:"image/png",uri:"https://arweave.net/k3_OCOHRni9XDO3VTbTvMvmWMdThkYynHoWYZyRe7_0?ext=png"}],
+            creators
+        },
+        //animation_url:"https://arweave.net/asdasd", //animation_url (para cuando es video, 3d, audio, o html)
+        image:"https://arweave.net/k3_OCOHRni9XDO3VTbTvMvmWMdThkYynHoWYZyRe7_0?ext=png",  //image
+        attributes:[{value:"Small", trait_type:"Size"}],
+        category: "image" //image, video, audio, html, vr (se usa vr para modelos 3D)
+    };
+    
+    const metadata_file = new Blob([JSON.stringify(offchain_metadata)], {type:"application/json"});
+    
+    
+    const bundled_metadata_file = await irys.bundle(json_file); //Cada archivo que quieres subir a arweave, debe pasar por esta funcion
+    const irys_url = bundled_metadata_file.url; //Esto va a tener https://arweave.net/blabla
+    
+    const irys_files = [bundled_metadata_file];
 
+    const irys_ix = await irys.getFundingInstructions({ files: irys_files }); //Se calcula el costo y se crean las instrucciones
+    const irys_registration = await irys.registerFiles({ files: irys_files, uuid }); //Se registran los archivos para subirse
+
+    
     const onchain = {
         name,
         symbol,
-        uri: offchainMetadataUri,
+        uri: irys_url,
         sellerFeeBasisPoints,
-        creators,
+        creators:creators.map(x=>({...x, address:toPublicKey(x.address)})),
         collection: null,
         uses: null,
         editionNonce: 0,
@@ -196,6 +231,9 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadataUrl, crea
         tokenProgramVersion: TokenProgramVersion.Original,
         tokenStandard: TokenStandard.NonFungible,
     }
+    
+    
+    
 
     const [treeAuthority] = PublicKey.findProgramAddressSync(
         [Buffer.from(tree.toBytes())],
@@ -213,7 +251,7 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadataUrl, crea
         compressionProgram: SPL_ACCOUNT_COMPRESSION_PROGRAM_ID
     }
 
-    // const signers = [];
+    
     const instructions = [];
 
     const mint_args = { message: onchain };
@@ -224,11 +262,11 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadataUrl, crea
     // const instructions = [];
 
     const tx = new Transaction();
-    tx.add(...instructions);
+    tx.add(...irys_ix, ...instructions);
 
     tx.recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
     tx.feePayer = payer;
-    // tx.partialSign(...signers);
+    tx.partialSign(...signers);
     const signature = await sendTransaction(tx, connection);
     console.log(signature)
     return await connection.confirmTransaction(signature, { commitment: "confirmed" });
@@ -236,16 +274,6 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadataUrl, crea
 }
 
 
-export const toPublicKey = (key) => {
-    if (typeof key !== "string") return key;
-    const PubKeysInternedMap = new Map()
-    let result = PubKeysInternedMap.get(key);
-    if (!result) {
-        result = new PublicKey(key);
-        PubKeysInternedMap.set(key, result);
-    }
-    return result;
-};
 
 const createConnection = () => {
     return new Connection("https://devnet.helius-rpc.com/?api-key=6b236027-5ab9-41d9-b516-d6f0b5a5286e", { commitment: "confirmed", confirmTransactionInitialTimeout: (60 * 2 * 1000) }) //creo que confirmTransactionInitialTimeout ya no se usa
