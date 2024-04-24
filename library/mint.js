@@ -202,17 +202,38 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadata, creator
     console.log("-- traits --")
     console.log(traits)
 
+    metadata.files.file
+    metadata.files.cover
+
+    let metadata_file_url = '';
+    let metadata_cover_url = '';
+
+    if (metadata.files.file) {
+        metadata_file_url = await irys.bundle(metadata.files.file.blob, false);
+    }
+    if (metadata.files.cover) {
+        metadata_cover_url = await irys.bundle(metadata.files.cover.blob, false);
+    }
+
+    //const irys_media_url = bundled_metadata_media_file.irys.url;
+
+    console.log("-- media --");
+    console.log(metadata.files.file.blob)
+    console.log(metadata.files)
+    console.log(metadata_file_url?.irys?.url);
+    console.log(metadata_cover_url?.irys?.url);
+
     const offchain_metadata = {
         name: metadata.name,
         description: metadata.description,
         seller_fee_basis_points: sellerFeeBasisPoints,
         symbol,
         properties: {
-            files: [{ type: "image/png", uri: "https://arweave.net/k3_OCOHRni9XDO3VTbTvMvmWMdThkYynHoWYZyRe7_0?ext=png" }],
+            files: [{ type: "image/png", uri: metadata_file_url?.irys?.url }],
             creators
         },
         //animation_url:"https://arweave.net/asdasd", //animation_url (para cuando es video, 3d, audio, o html)
-        image: "https://arweave.net/k3_OCOHRni9XDO3VTbTvMvmWMdThkYynHoWYZyRe7_0?ext=png",  //image
+        image: metadata_file_url?.irys?.url,  //image
         attributes: traits,
         category: "image" //image, video, audio, html, vr (se usa vr para modelos 3D)
     };

@@ -264,6 +264,7 @@ export default {
         description: this.nft_data.description,
         traits: this.nft_data.traits,
         royalties: this.nft_data.royalties,
+        files: this.nft_data.file,
       };
 
       // console.log(creators);
