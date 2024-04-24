@@ -136,7 +136,9 @@ export const createTree = async ({ payer, public_tree }) => {
     @tree = merkle tree public key
     @treeDelegate = public key for the merkle tree creator
 */
-const compressNFT = async ({ payer, tree, treeDelegate }) => {
+export const compressNFT = async ({ payer, tree, treeDelegate, metadataUrl, creatorWallets }) => {
+    const { sendTransaction } = useWallet();
+    const connection = createConnection();
 
     const symbol = "Symbol";
     const name = "Name";
@@ -145,17 +147,38 @@ const compressNFT = async ({ payer, tree, treeDelegate }) => {
     payer = toPublicKey(payer);
     treeDelegate = treeDelegate ? toPublicKey(treeDelegate) || payer : '';
 
-    const offchainMetadataUri = "https://arweave.net/blabla";
+    const offchainMetadataUri = metadataUrl;
+    // const offchainMetadataUri = "https://arweave.net/blabla";
 
-    const sellerFeeBasisPoints = royalty * 100;
+    const royalty = 0.5;
+
+    let sellerFeeBasisPoints = royalty * 100;
+    sellerFeeBasisPoints = new BN(sellerFeeBasisPoints);
 
     //Iterate over creator wallets and 
-    // find the wallet connected and add it to the array width verified true
+    // find the wallet connected and add it to the array with verified true
     // add all wallets in the wallets array but with verified false
 
     const creators = [
-        { address: "blabla", verified: true, share: 100 }
     ];
+
+    creatorWallets.map(item => {
+        if (item.address === payer.toBase58()) {
+            creators.push({ address: item.address, share: item.royalty, verified: true });
+        } else {
+            creators.push({ address: item.address, share: item.royalty, verified: false })
+        }
+    })
+    console.log(creators)
+    creators.map(item => {
+        item.address = toPublicKey(item.address);
+    });
+
+    // console.log('-- payer --')
+    // console.log(payer.toBase58())
+    // console.log("*****")
+    // console.log(creators)
+    // console.log("*****")
 
     const isMutable = false;
 
@@ -190,11 +213,26 @@ const compressNFT = async ({ payer, tree, treeDelegate }) => {
         compressionProgram: SPL_ACCOUNT_COMPRESSION_PROGRAM_ID
     }
 
-    const signers = [];
+    // const signers = [];
     const instructions = [];
 
     const mint_args = { message: onchain };
     instructions.push(createMintV1Instruction(mint_accounts, mint_args))
+
+    // return instructions;
+
+    // const instructions = [];
+
+    const tx = new Transaction();
+    tx.add(...instructions);
+
+    tx.recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
+    tx.feePayer = payer;
+    // tx.partialSign(...signers);
+    const signature = await sendTransaction(tx, connection);
+    console.log(signature)
+    return await connection.confirmTransaction(signature, { commitment: "confirmed" });
+
 }
 
 

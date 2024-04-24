@@ -194,19 +194,26 @@
         font-size: 24px;
         font-weight: bolder;
       "
-      >Uploading your assets to arweave...</span
+      >{{ process_msg }}</span
     >
   </div>
 </template>
 <script>
 import { OrbitControls } from "@tresjs/cientos";
+import { useWallet } from "solana-wallets-vue";
+import { createTree, compressNFT } from "@/../library/mint";
 
 export default {
   mixins: [],
   emit: ["mint"],
 
   data() {
-    return { data: this.nft_data, showPopUp: false, loading: false };
+    return {
+      data: this.nft_data,
+      showPopUp: false,
+      loading: false,
+      process_msg: null,
+    };
   },
   props: {
     nft_data: {
@@ -237,12 +244,38 @@ export default {
         : null;
     },
     async mintAsset() {
+      /* Uploads data to Arweave */
+      //TODO
+      this.process_msg = "Uploading your assets to arweave...";
       this.loading = true;
       await this.sleep(5000);
+      const meta_data =
+        "https://5232s7wjkt2frnyg6hvpsgp3deo4e4vf3tvqkz5hmeyzyw2cvwtq.arweave.net/7repfslU9Fi3BvHq-Rn7GR3CcqXc6wVnp2ExnFtCrac";
+
+      /* Mints the Nft */
+      const { publicKey, sendTransaction } = useWallet();
+      const payer = publicKey.value;
+      //const tree = createTree({ payer: publicKey.value, public_tree: true });
+      const tree = "4k7xBH9oZhXn3Y1pvB6bdubTpbRkmg3S8XhfgvLf7NNN";
+      const creators = this.nft_data.wallets;
+
+      console.log(creators);
+
+      const compressed = await compressNFT({
+        payer: payer,
+        tree: tree,
+        treeDelegate: payer,
+        metadataUrl: meta_data,
+        creatorWallets: creators,
+      });
+
+      console.log("-- compressed --");
+      console.log(compressed);
+
+      this.process_msg = "Minting your NFT...";
+      await this.sleep(5000);
+
       this.$emit("mint", this.data);
-      // if (!showPopUp) {
-      //   this.$emit("mint", this.data);
-      // }
     },
     sleep(ms) {
       return new Promise((resolve) => setTimeout(resolve, ms));
