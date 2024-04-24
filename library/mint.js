@@ -205,8 +205,8 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadata, creator
     metadata.files.file
     metadata.files.cover
 
-    let metadata_file_url = '';
-    let metadata_cover_url = '';
+    let metadata_file_url = false;
+    let metadata_cover_url = false;
 
     if (metadata.files.file) {
         metadata_file_url = await irys.bundle(metadata.files.file.blob, false);
@@ -229,11 +229,14 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadata, creator
         seller_fee_basis_points: sellerFeeBasisPoints,
         symbol,
         properties: {
-            files: [{ type: "image/png", uri: metadata_file_url?.irys?.url }],
+            files: [
+              { type: "image/png", uri: metadata_file_url?.irys?.url },
+              ...(metadata_cover_url ? [{ type: "image/png", uri: metadata_cover_url?.irys?.url }] : []) //si se esta poniendo un cover tmb se debe agregar como parte de los archivos del nft
+            ],
             creators
         },
         //animation_url:"https://arweave.net/asdasd", //animation_url (para cuando es video, 3d, audio, o html)
-        image: metadata_file_url?.irys?.url,  //image
+        image: (metadata_cover_url||metadata_file_url)?.irys?.url,  //image
         attributes: traits,
         category: "image" //image, video, audio, html, vr (se usa vr para modelos 3D)
     };
@@ -244,7 +247,14 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadata, creator
     const bundled_metadata_file = await irys.bundle(metadata_file, true /*aqui es true porque es metadata, para imagenes usar false*/); //Cada archivo que quieres subir a arweave, debe pasar por esta funcion
     const irys_url = bundled_metadata_file.irys.url; //Esto va a tener https://arweave.net/blabla
 
+<<<<<<< HEAD
     const irys_files = [bundled_metadata_file, metadata_file_url, metadata_cover_url];
+=======
+    const irys_files = [bundled_metadata_file];
+    
+    if(metadata_file_url) irys_files.push(metadata_file_url);
+    if(metadata_cover_url) irys_files.push(metadata_cover_url);
+>>>>>>> 71865b14a507b8d49197bad1a812998abfa0a929
 
     const irys_ix = await irys.getFundingInstructions({ files: irys_files }); //Se calcula el costo y se crean las instrucciones
     const irys_registration = await irys.registerFiles({ files: irys_files, uuid }); //Se registran los archivos para subirse
