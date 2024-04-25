@@ -19,9 +19,8 @@
           justify-content: center;
         "
         :style="{
-          width:
-            getType == 'audio' || getType == 'video' ? 'fit-content' : '100%',
-          height: fileType == 'audio' ? 'fit-content' : '',
+          width: getType == 'audio' || getType == 'video' ? 'fit-content' : '',
+          height: fileType == 'audio' ? 'fit-content' : '325px',
         }"
       >
         <img

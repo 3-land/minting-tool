@@ -517,6 +517,8 @@ body {
   }
   .file-container {
     padding-left: 10%;
+    display: block;
+    padding: 24px;
   }
 }
 </style>

@@ -71,6 +71,7 @@
       >
         <div
           class="thumbnail"
+          style="width: fit-content; min-width: 300px"
           :style="{
             border: error_cover
               ? '2px dashed red'
@@ -241,6 +242,8 @@ export default {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  flex-direction: column;
+  align-items: center;
 }
 .thumbnail {
   border-radius: 16px;

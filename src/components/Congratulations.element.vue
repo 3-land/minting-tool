@@ -35,7 +35,7 @@
         <img
           v-if="getType == 'image'"
           style="
-            background-color: black;
+            background-color: transparent;
             width: 100%;
             height: 100%;
             border-radius: 16px;
@@ -55,7 +55,11 @@
           ref="audio"
           controls
         />
-        <TresCanvas v-if="getType == '3d'" clear-color="#82DBC5">
+        <TresCanvas
+          v-if="getType == '3d'"
+          clear-color="#82DBC5"
+          style="width: 300px; height: 300px"
+        >
           <TresPerspectiveCamera :args="[45, 120, 0.1, 1000]" />
           <OrbitControls />
           <Suspense>
@@ -71,9 +75,10 @@
       <div
         v-if="getType == 'video' || getType == 'audio'"
         style="
-          border: 1px dashed rgb(30, 30, 30, 0.5);
-          border-radius: 4px;
-          width: 100%;
+          background-color: white;
+          padding: 8px;
+          border-radius: 16px;
+          box-shadow: 0px 4px 8.6px 0px rgba(0, 0, 0, 0.15);
           display: flex;
           justify-content: center;
         "

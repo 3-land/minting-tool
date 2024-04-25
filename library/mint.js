@@ -223,6 +223,27 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadata, creator
     console.log(main_file?.irys?.url);
     console.log(cover_file?.irys?.url);
 
+    // const offchain_metadata = {
+    //     name: metadata.name,
+    //     description: metadata.description,
+    //     seller_fee_basis_points: sellerFeeBasisPoints,
+    //     symbol,
+    //     properties: {
+    //         files: [
+    //             { type: "image/png", uri: main_file?.irys?.url },
+    //             ...(cover_file ? [{ type: "image/png", uri: cover_file?.irys?.url }] : []) //si se esta poniendo un cover tmb se debe agregar como parte de los archivos del nft
+    //         ],
+    //         creators
+    //     },
+    //     //animation_url:"https://arweave.net/asdasd", //animation_url (para cuando es video, 3d, audio, o html)
+    //     image: (cover_file || main_file)?.irys?.url,  //image
+    //     attributes: traits,
+    //     category: "image" //image, video, audio, html, vr (se usa vr para modelos 3D)
+    // };
+
+    // const type = checkFileType(main_file);
+    // console.log("-- type --");
+    // console.log(type);
     const offchain_metadata = {
         name: metadata.name,
         description: metadata.description,
@@ -230,16 +251,27 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadata, creator
         symbol,
         properties: {
             files: [
-                { type: "image/png", uri: main_file?.irys?.url },
-                ...(cover_file ? [{ type: "image/png", uri: cover_file?.irys?.url }] : []) //si se esta poniendo un cover tmb se debe agregar como parte de los archivos del nft
+                { type: checkFileType(main_file), uri: main_file?.irys?.url },
+                ...(cover_file ? [{ type: checkFileType(cover_file), uri: cover_file?.irys?.url }] : []) //si se esta poniendo un cover tmb se debe agregar como parte de los archivos del nft
             ],
             creators
         },
         //animation_url:"https://arweave.net/asdasd", //animation_url (para cuando es video, 3d, audio, o html)
         image: (cover_file || main_file)?.irys?.url,  //image
         attributes: traits,
-        category: "image" //image, video, audio, html, vr (se usa vr para modelos 3D)
+        category: checkFileType(main_file) //image, video, audio, html, vr (se usa vr para modelos 3D)
     };
+
+    // if (["video", "audio", "vr"].includes(checkFileType(cover_file))) {
+    //     console.log('audio')
+    //     offchain_metadata.animation_url = cover_file?.irys?.url;
+    // } else if (checkFileType(main_file) === "image") {
+    //     console.log('image')
+    //     offchain_metadata.image = main_file?.irys?.url;
+    // }
+
+    // console.log('-- offchain metadata --');
+    // console.log(offchain_metadata)
 
     const metadata_file = new Blob([JSON.stringify(offchain_metadata)], { type: "application/json" });
 
@@ -308,6 +340,7 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadata, creator
     tx.feePayer = payer;
     tx.partialSign(...signers);
     const signature = await sendTransaction(tx, connection);
+    console.log("-- signature --")
     console.log(signature)
     const sent = await connection.confirmTransaction(signature, { commitment: "confirmed" });
 
@@ -318,7 +351,7 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadata, creator
 
 
 const createConnection = () => {
-    return new Connection("https://devnet.helius-rpc.com/?api-key=6b236027-5ab9-41d9-b516-d6f0b5a5286e", { commitment: "confirmed", confirmTransactionInitialTimeout: (60 * 2 * 1000) }) //creo que confirmTransactionInitialTimeout ya no se usa
+    return new Connection("https://radial-restless-asphalt.solana-devnet.quiknode.pro/ee9d638cb93948779161df8f99a04ccf17026c8a/", { commitment: "confirmed", confirmTransactionInitialTimeout: (60 * 2 * 1000) }) //creo que confirmTransactionInitialTimeout ya no se usa
 }
 
 const crearNFT = async ({ owner, files, thumbnail }) => {
@@ -516,4 +549,16 @@ export const uuid4 = () => {
     data[8] = (data[8] & 0x3f) | 0x80; /// Patch the 8th byte to reflect a variant 1 UUID (version 4 UUIDs are)
     const view = new DataView(data.buffer); /// Create a view backed by a 16-byte buffer
     return `${ho(view.getUint32(0), 8)}-${ho(view.getUint16(4), 4)}-${ho(view.getUint16(6), 4)}-${ho(view.getUint16(8), 4)}-${ho(view.getUint32(10), 8)}${ho(view.getUint16(14), 4)}`; /// Compile the canonical textual form from the array data
+};
+
+export const checkFileType = (file) => {
+    return file?.type?.includes("image")
+        ? "image"
+        : file?.type?.includes("audio")
+            ? "audio"
+            : file?.type?.includes("video")
+                ? "video"
+                : file?.name?.includes(".glb")
+                    ? "vr"
+                    : null;
 };
