@@ -14,7 +14,9 @@
   </header>
   <div class="body_container">
     <div class="file-container">
-      <span style="font-size: 24px; width: 100%">Details</span>
+      <span style="font-size: 24px; width: 100%; padding: 24px 0px 16px 24px"
+        >Details</span
+      >
       <FileUploader
         style="width: 100%"
         :value="data.file"
@@ -462,7 +464,7 @@ body {
   display: block;
 }
 .file-container {
-  height: fit-content;
+  /*height: fit-content;*/
 }
 .collaboration-container {
   padding: 24px 24px 0px 24px;

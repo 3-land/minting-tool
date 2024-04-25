@@ -10,6 +10,9 @@
         class="thumbnail"
         :style="{
           border: error ? '2px dashed red' : '1px dashed rgba(0, 0, 0, 0.2)',
+          width:
+            fileType == 'audio' || fileType == 'video' ? 'fit-content' : '100%',
+          height: fileType == 'audio' ? 'fit-content' : '',
         }"
       >
         <span v-if="value == null">Upload Your File</span>
@@ -59,7 +62,7 @@
       />
     </div>
     <div v-if="fileType == 'video' || fileType == 'audio'" style="width: 100%">
-      <span>Cover</span>
+      <div style="padding: 24px 0px 24px 0px">Cover</div>
       <div
         class="file-container"
         @click="openFileExplorer(true)"
@@ -226,23 +229,25 @@ export default {
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
+  padding: 0px 24px 0px 24px;
 }
 .file-container {
-  height: 325px;
+  /* height: 325px; */
   width: 100%;
-  padding: 16px 24px 0px 24px;
+  /* padding: 16px 24px 0px 24px; */
   cursor: pointer;
 
   gap: var(--gap);
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
 }
 .thumbnail {
   border-radius: 16px;
   /* height: 100%; */
-  /* height: 317px; */
-  /* width: 100%; */
-  width: 300px;
+  height: 317px;
+  width: 100%;
+  /* width: 300px; */
   align-items: center;
   justify-content: center;
   display: flex;

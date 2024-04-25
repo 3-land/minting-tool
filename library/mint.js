@@ -157,7 +157,7 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadata, creator
     const royalty = metadata.royalties;
 
     let sellerFeeBasisPoints = royalty * 100;
-    sellerFeeBasisPoints = new BN(sellerFeeBasisPoints);
+    // sellerFeeBasisPoints = new BN(sellerFeeBasisPoints);
 
     //Iterate over creator wallets and 
     // find the wallet connected and add it to the array with verified true
@@ -202,17 +202,17 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadata, creator
     console.log("-- traits --")
     console.log(traits)
 
-    metadata.files.file
-    metadata.files.cover
+    // metadata.files.file
+    // metadata.files.cover
 
-    let metadata_file_url = false;
-    let metadata_cover_url = false;
+    let main_file = false;
+    let cover_file = false;
 
     if (metadata.files.file) {
-        metadata_file_url = await irys.bundle(metadata.files.file.blob, false);
+        main_file = await irys.bundle(metadata.files.file, false);
     }
     if (metadata.files.cover) {
-        metadata_cover_url = await irys.bundle(metadata.files.cover.blob, false);
+        cover_file = await irys.bundle(metadata.files.cover, false);
     }
 
     //const irys_media_url = bundled_metadata_media_file.irys.url;
@@ -220,8 +220,8 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadata, creator
     console.log("-- media --");
     console.log(metadata.files.file.blob)
     console.log(metadata.files)
-    console.log(metadata_file_url?.irys?.url);
-    console.log(metadata_cover_url?.irys?.url);
+    console.log(main_file?.irys?.url);
+    console.log(cover_file?.irys?.url);
 
     const offchain_metadata = {
         name: metadata.name,
@@ -230,13 +230,13 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadata, creator
         symbol,
         properties: {
             files: [
-              { type: "image/png", uri: metadata_file_url?.irys?.url },
-              ...(metadata_cover_url ? [{ type: "image/png", uri: metadata_cover_url?.irys?.url }] : []) //si se esta poniendo un cover tmb se debe agregar como parte de los archivos del nft
+                { type: "image/png", uri: main_file?.irys?.url },
+                ...(cover_file ? [{ type: "image/png", uri: cover_file?.irys?.url }] : []) //si se esta poniendo un cover tmb se debe agregar como parte de los archivos del nft
             ],
             creators
         },
         //animation_url:"https://arweave.net/asdasd", //animation_url (para cuando es video, 3d, audio, o html)
-        image: (metadata_cover_url||metadata_file_url)?.irys?.url,  //image
+        image: (cover_file || main_file)?.irys?.url,  //image
         attributes: traits,
         category: "image" //image, video, audio, html, vr (se usa vr para modelos 3D)
     };
@@ -247,14 +247,11 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadata, creator
     const bundled_metadata_file = await irys.bundle(metadata_file, true /*aqui es true porque es metadata, para imagenes usar false*/); //Cada archivo que quieres subir a arweave, debe pasar por esta funcion
     const irys_url = bundled_metadata_file.irys.url; //Esto va a tener https://arweave.net/blabla
 
-<<<<<<< HEAD
-    const irys_files = [bundled_metadata_file, metadata_file_url, metadata_cover_url];
-=======
+    // const irys_files = [bundled_metadata_file, metadata_file_url, metadata_cover_url];
     const irys_files = [bundled_metadata_file];
-    
-    if(metadata_file_url) irys_files.push(metadata_file_url);
-    if(metadata_cover_url) irys_files.push(metadata_cover_url);
->>>>>>> 71865b14a507b8d49197bad1a812998abfa0a929
+
+    if (main_file) irys_files.push(main_file);
+    if (cover_file) irys_files.push(cover_file);
 
     const irys_ix = await irys.getFundingInstructions({ files: irys_files }); //Se calcula el costo y se crean las instrucciones
     const irys_registration = await irys.registerFiles({ files: irys_files, uuid }); //Se registran los archivos para subirse

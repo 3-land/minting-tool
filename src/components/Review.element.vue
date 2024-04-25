@@ -18,6 +18,11 @@
           display: flex;
           justify-content: center;
         "
+        :style="{
+          width:
+            getType == 'audio' || getType == 'video' ? 'fit-content' : '100%',
+          height: fileType == 'audio' ? 'fit-content' : '',
+        }"
       >
         <img
           v-if="getType == 'image'"
@@ -266,6 +271,9 @@ export default {
         royalties: this.nft_data.royalties,
         files: this.nft_data.file,
       };
+
+      console.log("-- metadata review --");
+      console.log(meta_data);
 
       // console.log(creators);
 
