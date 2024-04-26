@@ -14,11 +14,8 @@
   </header>
   <div class="body_container">
     <div class="file-container">
-      <span style="font-size: 24px; width: 100%; padding: 24px 0px 16px 24px"
-        >Details</span
-      >
+      <span style="font-size: 24px; padding: 24px 0px 16px 24px">Details</span>
       <FileUploader
-        style="width: 100%"
         :value="data.file"
         @update:value="inputChange($event, 'file')"
         :error="hasFile ? false : true"

@@ -243,7 +243,7 @@ export default {
   flex-wrap: wrap;
   justify-content: center;
   flex-direction: column;
-  align-items: center;
+  /* align-items: center; */
 }
 .thumbnail {
   border-radius: 16px;
