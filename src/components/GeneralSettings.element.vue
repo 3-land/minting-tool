@@ -69,7 +69,7 @@
         </div>
         <div class="input-container">
           <div class="add-traits-title">
-            <span>Add traits</span>
+            <span>Traits</span>
             <Toggle :value="showTraits" @input="updateShowTraits" />
           </div>
           <div v-if="showTraits" class="list-container">
@@ -116,7 +116,7 @@
             </div>
             <ButtonBox
               class="action-button"
-              label="Add traits"
+              label="Add Trait"
               @click="addTrait()"
             />
           </div>
@@ -213,7 +213,7 @@ export default {
   emits: ["nft_data"],
   data() {
     return {
-      showTraits: true,
+      showTraits: false,
       defaultPercentage: 5,
       isReady: null,
       value: {
@@ -432,7 +432,7 @@ body {
 .details-container {
   padding: 24px 24px 0px 24px;
 
-  --gap: 12px;
+  --gap: 20px;
   gap: var(--gap);
   display: flex;
   flex-wrap: wrap;
