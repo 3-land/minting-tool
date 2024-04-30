@@ -178,6 +178,8 @@ export default {
 .alert-container {
   background-image: url("/src/assets/alert.svg");
   display: flex;
+  background-position: center;
+  background-repeat: no-repeat;
   width: 22px;
   margin-right: 12px;
   height: 22px;
