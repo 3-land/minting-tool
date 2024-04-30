@@ -205,7 +205,7 @@
 <script>
 import { OrbitControls } from "@tresjs/cientos";
 import { useWallet } from "solana-wallets-vue";
-import { createTree, compressNFT } from "@/../library/mint";
+import { createTree, compressNFT } from "../../library/src/mint";
 import { config } from "../../config";
 
 export default {
@@ -227,8 +227,6 @@ export default {
   },
   computed: {
     getType() {
-      console.log(this.data);
-      console.log(this.nft_data);
       const type = this.checkFileType(this.data.file.file);
       return type;
     },
@@ -259,18 +257,12 @@ export default {
     },
     async mintAsset() {
       const local_data = this.getLocalConfig();
-      /* Uploads data to Arweave */
-      //TODO
       this.process_msg = "Uploading your assets to arweave...";
       this.loading = true;
       await this.sleep(5000);
-      // const meta_data =
-      //   "https://5232s7wjkt2frnyg6hvpsgp3deo4e4vf3tvqkz5hmeyzyw2cvwtq.arweave.net/7repfslU9Fi3BvHq-Rn7GR3CcqXc6wVnp2ExnFtCrac";
 
-      /* Mints the Nft */
       const { publicKey, sendTransaction } = useWallet();
       const payer = publicKey.value;
-      //const tree = createTree({ payer: publicKey.value, public_tree: true });
       const tree = config.tree_address;
       const creators = this.nft_data.wallets;
 
@@ -281,11 +273,6 @@ export default {
         royalties: this.nft_data.royalties,
         files: this.nft_data.file,
       };
-
-      console.log("-- metadata review --");
-      console.log(meta_data);
-
-      // console.log(creators);
 
       const compressed = await compressNFT({
         payer: payer,

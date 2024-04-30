@@ -264,14 +264,11 @@ export default {
       return false;
     },
     hasCover() {
-      console.log("im");
       if (this.value?.file?.file != null || this.missing?.file?.file != null) {
         if (
           this.data?.file?.cover != "" &&
           this.missing?.file.cover == "empty"
         ) {
-          console.log("im");
-
           return true;
         }
       }
@@ -376,7 +373,6 @@ export default {
     },
     goToReview() {
       let canGo = true;
-      //Checks if there is any missing fields
       for (const _value in this.value) {
         if (_value == "traits") {
           for (const _key in this.value.traits) {

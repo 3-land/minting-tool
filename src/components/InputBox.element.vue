@@ -129,7 +129,7 @@ export default {
     return {
       N: this.step,
       input_type: this.type,
-      localValue: this.value, // Add this line
+      localValue: this.value,
     };
   },
   props: {

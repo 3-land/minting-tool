@@ -126,15 +126,7 @@ export default {
       deep: true,
     },
   },
-  mounted() {
-    // console.log(this.fileType);
-    // this.fileType = this.checkFileType(this.value?.file);
-    // console.log(this.fileType);
-    // console.log("hi");
-    // console.log(this.value);
-    // console.log(this.value.file);
-    // console.log(this.value.file.blob);
-  },
+  mounted() {},
   methods: {
     openFileExplorer(cover) {
       if (!cover) {
@@ -147,7 +139,6 @@ export default {
     },
     onFileChange(e, cover) {
       const file = e.target.files[0];
-      // console.log(file);
       if (file && !cover) {
         this.checkFileType(file);
         file.blob = URL.createObjectURL(file);

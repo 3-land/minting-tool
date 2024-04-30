@@ -51,8 +51,6 @@ export default {
   methods: {
     inputChange(valor, name) {
       this.config[name] = valor;
-      // const v = { ...(this.data || {}), [name]: valor };
-      // this.$emit("update:data", v);
     },
     closeConfig() {
       this.$emit("closeConfig");

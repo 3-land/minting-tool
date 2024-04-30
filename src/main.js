@@ -10,7 +10,6 @@ import GeneralSettings from "./components/GeneralSettings.element.vue";
 import Review from "./components/Review.element.vue";
 import Congratulations from "./components/Congratulations.element.vue";
 import ConfigValues from "./components/ConfigValues.element.vue";
-import TestMint from "./components/TestMint.element.vue";
 
 import { WalletMultiButton } from "solana-wallets-vue";
 
@@ -19,7 +18,6 @@ import { OrbitControls, GLTFModel } from '@tresjs/cientos';
 
 import SolanaWallets from "solana-wallets-vue";
 import "solana-wallets-vue/styles.css";
-import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 
 import {
     PhantomWalletAdapter,
@@ -32,20 +30,18 @@ const walletOptions = {
     autoConnect: true,
 };
 
-// Define routes
-const routes = [
-    { path: '/test', component: TestMint }
-]
+// const routes = [
+//     { path: '/', component: '' }
+// ]
 
-// Create router instance
-const router = createRouter({
-    history: createWebHistory(),
-    routes,
-})
+// const router = createRouter({
+//     history: createWebHistory(),
+//     routes,
+// })
 
 const app = createApp(App)
 app
-    .use(router) // Use the router instance
+    //.use(router)
     .component('ButtonBox', ButtonBox)
     .component('InputBox', InputBox)
     .component('Toggle', Toggle)

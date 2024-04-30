@@ -1,7 +1,4 @@
 <template>
-  <!-- <router-view /> -->
-  <!-- {{ nft }} -->
-
   <GeneralSettings v-if="!isReady" v-model:data="nft" @nft_data="manageNft" />
   <Review
     v-if="isReady && !minted && edit"
@@ -37,7 +34,6 @@ export default {
   },
   methods: {
     manageNft(data) {
-      // this.nft = data;
       this.edit = true;
     },
     handleEdit() {

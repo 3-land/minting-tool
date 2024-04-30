@@ -1,19 +1,13 @@
 import { WebIrys } from '@irys/sdk';
 import { sleep, nowS } from "./utils";
 import { toPublicKey } from "./misc";
-import { config as configLocal } from '../config';
-
-
+import { config as configLocal } from '../../config';
 
 import crypto from "crypto";
-
-
-
 
 import { SystemProgram, Keypair } from "@solana/web3.js";
 
 import nacl from 'tweetnacl';
-import { config } from 'process';
 
 nacl.encodeUTF8 = function (arr) {
 	var i, s = [];
@@ -40,11 +34,6 @@ const irys_network = true ? "https://devnet.irys.xyz" : "https://node2.irys.xyz"
 
 const local_data = JSON.parse(localStorage.getItem("config"));
 const rpc = local_data?.rpc ? local_data?.rpc : configLocal?.rpc;
-/*function generateRandomBytes(length) {
-  var values = new Uint8Array(length);
-  window.crypto.getRandomValues(values);
-  return values;
-}*/
 
 export class IrysHelper {
 	async verifyBalance(id) {
@@ -96,7 +85,6 @@ export class IrysHelper {
 	}
 
 	async getFundingInstructions({ files, payer }) {
-		console.log("FILES", files);
 		if (!payer) payer = this.owner;
 
 		let bytes = 0;
@@ -133,16 +121,7 @@ export class IrysHelper {
 	}
 
 	async getWallet() {
-		//To-do: Save in local storage the Irys Wallet that gets created on every session, so the slippage can be reused in future arweave uploads
-		/*const sc = await storage.getLocal(["irys_wallet"]);
-		let wallet = false;
-		if(sc?.irys_wallet){
-			wallet = Keypair.fromSecretKey( new Uint8Array(sc.irys_wallet) );
-		} else {*/
-
 		const wallet = Keypair.generate();
-		/*await storage.setLocal({"irys_wallet":[...wallet.secretKey]});
-	}*/
 		return wallet
 	}
 
@@ -150,15 +129,10 @@ export class IrysHelper {
 		return "irys-preupload-" + x
 	}
 
-	async uploadFiles({ uuid, signature, files/*Remove when local storage gets included*/ }) {
+	async uploadFiles({ uuid, signature, files }) {
 
 		await this.irys.ready();
 
-		//Checks local storage for existance of file
-
-		//const table = await storage.table("irys_uploads", true);
-		//const files = await table.get("uuid",uuid);
-		//if(!files?.[0]) return false;
 
 		const saved_signature = files?.[0]?.transaction ? (JSON.parse(files?.[0]?.transaction)?.[0] || null) : null
 		const values = { tried_at: nowS() };
@@ -174,8 +148,7 @@ export class IrysHelper {
 			if (file.status != "uploaded") {
 				const data = { ...file.data, ...values }
 				file.data = data;
-				//Saves file in local storage so we can reupload later in case of failure
-				//await table.set({data,id:file.id},"id",true); 
+
 			}
 		}
 
@@ -191,7 +164,6 @@ export class IrysHelper {
 
 			const blob = this.files_bridge[this.arweaveToID(_file.irys.id)];
 
-			//const blob = (await file.readFile(this.arweaveToID(_file.arweave)))?.file;
 			blob.nonce = _file.irys.nonce;
 			if (!blob) {
 				errors.push(_file.irys.id);
@@ -213,8 +185,6 @@ export class IrysHelper {
 				if (subida) {
 					succeeds.push(bundled.irys.id);
 					const data = { ..._file.data, fee_at_submit: bundled.price, uploaded_at: nowS() };
-					//Marks in local storage as uploaded, so you don't retry uploading
-					//await table.set({status:"uploaded",data,id:_file.id},"id",true);
 				} else {
 					throw "";
 				}
@@ -223,9 +193,6 @@ export class IrysHelper {
 				console.log("Error", e);
 				if (error.includes("already received")) {
 					succeeds.push(bundled.irys.id);
-					//const data = { ..._file.data, fee_at_submit: bundled.price, uploaded_at: nowS() };
-					//Marks in local storage as uploaded, so you don't retry uploading
-					//await table.set({status:"uploaded",data,id:_file.id},"id",true);
 				} else {
 					errors.push(_file.id);
 				}
@@ -234,10 +201,6 @@ export class IrysHelper {
 		}
 
 		const balance = await this.getBalance()
-		console.log("UPLOADED: ", succeeds.length)
-		console.log("FAILED: ", errors.length)
-		console.log("POST BALANCE: ", balance.toNumber())
-
 		return { errors, succeeds }
 
 	}
@@ -249,15 +212,6 @@ export class IrysHelper {
 	async registerFiles({ files, uuid }) {
 		const owner = this.owner;
 
-		/*
-		//Local storage manager, deletes files of old sessions that never executed
-		const table = await storage.table("irys_uploads", true);
-		const pre = await table.get("uuid",uuid);
-		for(const x of pre){
-			await file.deleteFile(this.arweaveToID(x.arweave))
-			await table.dexie.delete(x.id);
-		}
-		*/
 
 		let same = {};
 		this.files_bridge = {};
@@ -265,12 +219,8 @@ export class IrysHelper {
 			const arweave = _file.irys.id;
 			const data = { type: _file.type, nonce: _file.irys.nonce, size: _file.irys.size, fee_at_submit: _file.irys.price, slippage_fee: _file.irys.slippage_fee }
 			const tosave = { owner, arweave, uuid, status: "waiting", date: nowS(), data, payload: _file.payload };
-			//await file.saveFile(_file, this.arweaveToID(arweave))
 
 			this.files_bridge[this.arweaveToID(arweave)] = _file;
-
-			//Saves file into storage
-			//await table.dexie.put(tosave);
 		}
 
 
@@ -287,7 +237,6 @@ export class IrysHelper {
 
 
 		const wallet = await this.getWallet();
-		console.log("wallet", wallet.secretKey);
 		if (!wallet) return false;
 		this.wallet = wallet;
 
@@ -298,7 +247,6 @@ export class IrysHelper {
 			}
 		};
 
-		console.log("provider", provider);
 		this.owner = address;
 
 
@@ -307,11 +255,6 @@ export class IrysHelper {
 		await this.irys.ready();
 		const to = await this.irys.utils.getBundlerAddress("solana");
 		const bal = await this.getBalance();
-		console.log("Irys address:", to);
-		console.log("Irys balance:", bal.toNumber());
-
-		//this.uploadFiles({ uuid: "e1d413a1-bc3c-4113-a225-616ffb05857f", signature: "j2EcvTvrbxyA7uqK5K1bVqpZmMgCmVNigWEoKENGQxBdnzFhddV4eyic52B451NxiNXGXzLbJEjCBp4w7bx5bQy" })
-
 		return true;
 	}
 }
