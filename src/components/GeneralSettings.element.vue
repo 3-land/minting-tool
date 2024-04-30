@@ -6,7 +6,17 @@
       <span style="font-size: 20px; color: rgba(30, 30, 30, 0.5)"
         >Time to mint</span
       >
-      <wallet-multi-button></wallet-multi-button>
+      <div style="display: flex; gap: 12px; align-items: center">
+        <div>
+          <ButtonBox
+            style="height: 41px; width: 41px"
+            @click="openConfig"
+            icon="/src/assets/settings.svg"
+          />
+          <ConfigValues v-if="openConfiguration" @closeConfig="openConfig" />
+        </div>
+        <wallet-multi-button></wallet-multi-button>
+      </div>
     </div>
     <span style="font-size: 40px">What would you like to create?</span>
     <span style="font-size: 14px">Create a cNFT</span>
@@ -214,6 +224,8 @@ export default {
   data() {
     return {
       showTraits: true,
+      openConfiguration: false,
+
       defaultPercentage: 5,
       isReady: null,
       value: {
@@ -290,6 +302,9 @@ export default {
     },
   },
   methods: {
+    openConfig() {
+      this.openConfiguration = !this.openConfiguration;
+    },
     inputChange(valor, name) {
       this.missing[name] = valor;
       this.value[name] = valor;

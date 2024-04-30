@@ -8,7 +8,7 @@
     }"
   >
     <span v-if="getLabel" v-html="getLabel" />
-    <img v-if="icon" :src="getIcon" />
+    <img v-if="icon" :src="getIcon" style="width: 25px" />
   </div>
 </template>
 <script>

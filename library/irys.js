@@ -1,6 +1,7 @@
 import { WebIrys } from '@irys/sdk';
 import { sleep, nowS } from "./utils";
 import { toPublicKey } from "./misc";
+import { config as configLocal } from '../config';
 
 
 
@@ -12,6 +13,7 @@ import crypto from "crypto";
 import { SystemProgram, Keypair } from "@solana/web3.js";
 
 import nacl from 'tweetnacl';
+import { config } from 'process';
 
 nacl.encodeUTF8 = function (arr) {
 	var i, s = [];
@@ -36,6 +38,8 @@ function blobToBase64(blob) {
 
 const irys_network = true ? "https://devnet.irys.xyz" : "https://node2.irys.xyz";
 
+const local_data = JSON.parse(localStorage.getItem("config"));
+const rpc = local_data?.rpc ? local_data?.rpc : configLocal?.rpc;
 /*function generateRandomBytes(length) {
   var values = new Uint8Array(length);
   window.crypto.getRandomValues(values);
@@ -92,7 +96,7 @@ export class IrysHelper {
 	}
 
 	async getFundingInstructions({ files, payer }) {
-console.log("FILES",files);
+		console.log("FILES", files);
 		if (!payer) payer = this.owner;
 
 		let bytes = 0;
@@ -201,7 +205,7 @@ console.log("FILES",files);
 			}
 			if (!bundled || bundled.irys.id != _file.irys.id) {
 				errors.push(_file.id);
-				
+
 				continue;
 			}
 			try {
@@ -216,7 +220,7 @@ console.log("FILES",files);
 				}
 			} catch (e) {
 				const error = e + "";
-				console.log("Error",e);
+				console.log("Error", e);
 				if (error.includes("already received")) {
 					succeeds.push(bundled.irys.id);
 					//const data = { ..._file.data, fee_at_submit: bundled.price, uploaded_at: nowS() };
@@ -299,7 +303,7 @@ console.log("FILES",files);
 
 
 
-		this.irys = new WebIrys({ url: irys_network, token: "solana", wallet: { rpcUrl:"https://devnet.helius-rpc.com/?api-key=6b236027-5ab9-41d9-b516-d6f0b5a5286e", provider } });
+		this.irys = new WebIrys({ url: irys_network, token: "solana", wallet: { rpcUrl: rpc, provider } });
 		await this.irys.ready();
 		const to = await this.irys.utils.getBundlerAddress("solana");
 		const bal = await this.getBalance();

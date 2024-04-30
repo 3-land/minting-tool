@@ -206,6 +206,7 @@
 import { OrbitControls } from "@tresjs/cientos";
 import { useWallet } from "solana-wallets-vue";
 import { createTree, compressNFT } from "@/../library/mint";
+import { config } from "../../config";
 
 export default {
   mixins: [],
@@ -247,7 +248,17 @@ export default {
         ? "3d"
         : null;
     },
+    getLocalConfig() {
+      let localConfig = localStorage.getItem("config");
+      if (localConfig) {
+        return JSON.parse(localConfig);
+      } else {
+        localStorage.setItem("config", JSON.stringify(defaultConfig));
+        return defaultConfig;
+      }
+    },
     async mintAsset() {
+      const local_data = this.getLocalConfig();
       /* Uploads data to Arweave */
       //TODO
       this.process_msg = "Uploading your assets to arweave...";
@@ -260,7 +271,7 @@ export default {
       const { publicKey, sendTransaction } = useWallet();
       const payer = publicKey.value;
       //const tree = createTree({ payer: publicKey.value, public_tree: true });
-      const tree = "4k7xBH9oZhXn3Y1pvB6bdubTpbRkmg3S8XhfgvLf7NNN";
+      const tree = config.tree_address;
       const creators = this.nft_data.wallets;
 
       const meta_data = {
@@ -278,7 +289,7 @@ export default {
 
       const compressed = await compressNFT({
         payer: payer,
-        tree: tree,
+        tree: local_data.tree_address ? local_data.tree_address : tree,
         treeDelegate: payer,
         metadata: meta_data,
         creatorWallets: creators,

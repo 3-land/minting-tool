@@ -9,7 +9,7 @@ import Toggle from "./components/Toggle.element.vue";
 import GeneralSettings from "./components/GeneralSettings.element.vue";
 import Review from "./components/Review.element.vue";
 import Congratulations from "./components/Congratulations.element.vue";
-import PopUp from "./components/PopUp.element.vue";
+import ConfigValues from "./components/ConfigValues.element.vue";
 import TestMint from "./components/TestMint.element.vue";
 
 import { WalletMultiButton } from "solana-wallets-vue";
@@ -53,7 +53,7 @@ app
     .component('GeneralSettings', GeneralSettings)
     .component('Review', Review)
     .component('Congratulations', Congratulations)
-    .component('PopUp', PopUp)
+    .component('ConfigValues', ConfigValues)
     .component('WalletMultiButton', WalletMultiButton)
     .component('TresCanvas', TresCanvas)
     .component('OrbitControls', OrbitControls)

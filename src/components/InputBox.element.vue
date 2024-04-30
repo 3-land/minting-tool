@@ -20,6 +20,7 @@
             error && input_type != 'number'
               ? '2px solid red'
               : '1px solid rgba(30, 30, 30, 0.5)',
+          color: getColor,
         }"
       />
       <!-- <div
@@ -140,8 +141,13 @@ export default {
     max: { default: null },
     step: { default: null },
     error: { default: null },
+    text_color: { default: null },
   },
-  computed: {},
+  computed: {
+    getColor() {
+      return this.text_color;
+    },
+  },
   methods: {
     increment() {
       if (this.localValue < 100) {
