@@ -11,7 +11,7 @@
           <ButtonBox
             style="height: 41px; width: 41px"
             @click="openConfig"
-            icon="/src/assets/settings.svg"
+            icon="/assets/settings.svg"
           />
           <ConfigValues v-if="openConfiguration" @closeConfig="openConfig" />
         </div>
@@ -113,7 +113,7 @@
                 />
                 <ButtonBox
                   v-if="index > 0"
-                  icon="/src/assets/royaltiesDeleteButton.svg"
+                  icon="/assets/royaltiesDeleteButton.svg"
                   color="rgba(30, 30, 30, 0.1)"
                   @click="removeTrait(index)"
                   style="
@@ -178,7 +178,7 @@
               />
               <ButtonBox
                 v-if="index > 0"
-                icon="/src/assets/royaltiesDeleteButton.svg"
+                icon="/assets/royaltiesDeleteButton.svg"
                 color="rgba(30, 30, 30, 0.1)"
                 @click="removeCreator(index)"
                 style="

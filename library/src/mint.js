@@ -1,6 +1,9 @@
 import { init as Irys } from "./irys";
 import { Connection, Keypair, PublicKey, Transaction } from '@solana/web3.js';
+
+//This import has to go somewhere else
 import { useWallet } from "solana-wallets-vue";
+
 import { toPublicKey } from "./misc";
 
 import {
@@ -218,7 +221,8 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadata, creator
     tx.partialSign(...signers);
     const signature = await sendTransaction(tx, connection);
     const sent = await connection.confirmTransaction(signature, { commitment: "confirmed" });
-
+    
+    //Check if transaction did send
     irys.uploadFiles({ uuid, signature, files: irys_files })
 
 }
@@ -245,7 +249,7 @@ export const checkFileType = (file) => {
             ? "audio"
             : file?.type?.includes("video")
                 ? "video"
-                : file?.name?.includes(".glb")
+                : (file?.name?.includes(".glb") || file?.type?.includes("model"))
                     ? "vr"
                     : null;
 };

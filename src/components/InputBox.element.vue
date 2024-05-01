@@ -89,7 +89,7 @@
           <button
             style="
               cursor: pointer;
-              background-image: url('/src/assets/arrow.svg');
+              background-image: url('/assets/arrow.svg');
               height: 22px;
               width: 33px;
               scale: 0.8;
@@ -100,7 +100,7 @@
           <button
             style="
               cursor: pointer;
-              background-image: url('/src/assets/arrow.svg');
+              background-image: url('/assets/arrow.svg');
               height: 22px;
               width: 33px;
               transform: rotate(180deg);
@@ -176,7 +176,7 @@ export default {
 
 <style>
 .alert-container {
-  background-image: url("/src/assets/alert.svg");
+  background-image: url("/assets/alert.svg");
   display: flex;
   background-position: center;
   background-repeat: no-repeat;
