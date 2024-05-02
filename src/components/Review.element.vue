@@ -211,7 +211,6 @@ import {
   createConnection,
 } from "../../library/src/mint";
 import { config as configLocal } from "../../config";
-import { Connection, Keypair, PublicKey, Transaction } from "@solana/web3.js";
 
 export default {
   mixins: [],

@@ -4,4 +4,5 @@ export const config = {
     arweave_rpc: "https://devnet.irys.xyz/",
 
 };
-//https://radial-restless-asphalt.solana-devnet.quiknode.pro/ee9d638cb93948779161df8f99a04ccf17026c8a/
+// arweave devnet: https://devnet.irys.xyz/
+// arweave mainnet: https://node2.irys.xyz/
