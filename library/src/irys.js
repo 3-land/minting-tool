@@ -1,7 +1,7 @@
 import { WebIrys } from '@irys/sdk';
 import { sleep, nowS } from "./utils";
 import { toPublicKey } from "./misc";
-import { config as configLocal } from '../../config';
+// import { config as configLocal } from '../../config';
 
 import crypto from "crypto";
 
@@ -30,10 +30,10 @@ function blobToBase64(blob) {
 	});
 }
 
-const irys_network = true ? "https://devnet.irys.xyz" : "https://node2.irys.xyz";
+// const irys_network = true ? "https://devnet.irys.xyz" : "https://node2.irys.xyz";
 
-const local_data = JSON.parse(localStorage.getItem("config"));
-const rpc = local_data?.rpc ? local_data?.rpc : configLocal?.rpc;
+// const local_data = JSON.parse(localStorage.getItem("config"));
+// const rpc = local_data?.rpc ? local_data?.rpc : configLocal?.rpc;
 
 export class IrysHelper {
 	async verifyBalance(id) {
@@ -233,8 +233,12 @@ export class IrysHelper {
 		}
 		return true;
 	}
-	async init(address) {
+	async init(address, options) {
 
+
+		const irys_network = options?.arweave_rpc;
+
+		const rpc = options?.rpc;
 
 		const wallet = await this.getWallet();
 		if (!wallet) return false;
@@ -260,14 +264,14 @@ export class IrysHelper {
 }
 
 let global = false;
-export const init = async (address) => {
+export const init = async (address, options) => {
 	if (global) {
 		const g = await global.sync();
 		if (!g) global = null;
 		return global;
 	}
 	global = new IrysHelper();
-	const g = await global.init(address);
+	const g = await global.init(address, options);
 	if (!g) global = null;
 	return global;
 }

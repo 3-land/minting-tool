@@ -35,6 +35,23 @@
           style="height: 41px"
         />
       </div>
+      <div class="config-item-container">
+        <!-- <label for="rpc">RPC:</label> -->
+        <InputBox
+          id="arweave"
+          :value="config?.arweave_rpc"
+          @update:value="inputChange($event, 'arweave')"
+          ref="arweave"
+          type="text"
+          placeholder="Input your Arweave RPC"
+          text_color="white"
+        />
+        <ButtonBox
+          @click="updateConfig('arweave')"
+          label="Update Arweave RPC"
+          style="height: 41px"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -57,6 +74,7 @@ export default {
     },
     getLocalConfig() {
       let localConfig = localStorage.getItem("config");
+
       if (localConfig) {
         return JSON.parse(localConfig);
       } else {
@@ -72,6 +90,17 @@ export default {
           JSON.stringify({
             tree_address: current.tree_address,
             rpc: this.config[key],
+            arweave_rpc: current.arweave_rpc,
+          })
+        );
+      }
+      if (key == "arweave") {
+        localStorage.setItem(
+          "config",
+          JSON.stringify({
+            tree_address: current.tree_address,
+            rpc: current.rpc,
+            arweave_rpc: this.config[key],
           })
         );
       }
@@ -82,6 +111,7 @@ export default {
           JSON.stringify({
             tree_address: this.config[key],
             rpc: current.rpc,
+            arweave_rpc: current.arweave_rpc,
           })
         );
       }

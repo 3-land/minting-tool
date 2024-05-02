@@ -7,11 +7,16 @@
         >Time to mint</span
       >
       <div style="display: flex; gap: 12px; align-items: center">
+        <ButtonBox
+          style="height: 41px; width: 41px"
+          @click="openWindow"
+          icon="./assets/github.svg"
+        />
         <div>
           <ButtonBox
             style="height: 41px; width: 41px"
             @click="openConfig"
-            icon="/assets/settings.svg"
+            icon="./assets/settings.svg"
           />
           <ConfigValues v-if="openConfiguration" @closeConfig="openConfig" />
         </div>
@@ -301,6 +306,9 @@ export default {
   methods: {
     openConfig() {
       this.openConfiguration = !this.openConfiguration;
+    },
+    openWindow() {
+      window.open("https://github.com/3-land/minting-tool", "_blank");
     },
     inputChange(valor, name) {
       this.missing[name] = valor;

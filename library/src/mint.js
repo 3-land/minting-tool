@@ -1,9 +1,6 @@
 import { init as Irys } from "./irys";
 import { Connection, Keypair, PublicKey, Transaction } from '@solana/web3.js';
 
-//This import has to go somewhere else
-import { useWallet } from "solana-wallets-vue";
-
 import { toPublicKey } from "./misc";
 
 import {
@@ -21,14 +18,14 @@ import {
 } from "@solana/spl-account-compression"; //0.1.10
 
 
-export const createTree = async ({ payer, public_tree }) => {
-    const { sendTransaction } = useWallet();
+export const createTree = async ({ payer, public_tree, options }) => {
+    // const { sendTransaction } = useWallet();
 
 
     public_tree = public_tree ?? true;
     payer = toPublicKey(payer);
 
-    const connection = createConnection();
+    const connection = createConnection(options.rpc);
     const signers = [];
     const merkleTreeKeypair = Keypair.generate();
     signers.push(merkleTreeKeypair);
@@ -77,8 +74,9 @@ export const createTree = async ({ payer, public_tree }) => {
     tx.recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
     tx.feePayer = payer;
     tx.partialSign(...signers);
-    const signature = await sendTransaction(tx, connection);
-    return await connection.confirmTransaction(signature, { commitment: "confirmed" });
+    return { tx }
+    // const signature = await sendTransaction(tx, connection);
+    // return await connection.confirmTransaction(signature, { commitment: "confirmed" });
 }
 
 /*
@@ -87,12 +85,11 @@ export const createTree = async ({ payer, public_tree }) => {
     @tree = merkle tree public key
     @treeDelegate = public key for the merkle tree creator
 */
-export const compressNFT = async ({ payer, tree, treeDelegate, metadata, creatorWallets }) => {
+export const compressNFT = async ({ payer, tree, treeDelegate, metadata, creatorWallets, options }) => {
 
     const uuid = "random_uuid_per_upload_session";
 
-    const { sendTransaction } = useWallet();
-    const connection = createConnection();
+    const connection = createConnection(options.rpc);
 
     const symbol = "Symbol";
     const name = "Name";
@@ -118,8 +115,7 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadata, creator
     const isMutable = false;
 
     const signers = [];
-
-    const irys = await Irys(payer.toBase58());
+    const irys = await Irys(payer.toBase58(), options);
     signers.push(irys.wallet);
 
 
@@ -219,18 +215,20 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadata, creator
     tx.recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
     tx.feePayer = payer;
     tx.partialSign(...signers);
-    const signature = await sendTransaction(tx, connection);
-    const sent = await connection.confirmTransaction(signature, { commitment: "confirmed" });
-    
-    //Check if transaction did send
-    irys.uploadFiles({ uuid, signature, files: irys_files })
+
+    return {
+        tx, upload: (signature) => {
+            irys.uploadFiles({ uuid, signature, files: irys_files })
+
+        }
+    }
 
 }
 
 
 
-const createConnection = () => {
-    return new Connection("https://radial-restless-asphalt.solana-devnet.quiknode.pro/ee9d638cb93948779161df8f99a04ccf17026c8a/", { commitment: "confirmed", confirmTransactionInitialTimeout: (60 * 2 * 1000) })
+export const createConnection = (rpc) => {
+    return new Connection(rpc, { commitment: "confirmed", confirmTransactionInitialTimeout: (60 * 2 * 1000) })
 }
 
 export const uuid4 = () => {
@@ -249,7 +247,7 @@ export const checkFileType = (file) => {
             ? "audio"
             : file?.type?.includes("video")
                 ? "video"
-                : (file?.name?.includes(".glb") || file?.type?.includes("model"))
+                : (file?.name?.includes(".glb") || file?.type?.includes("model"))
                     ? "vr"
                     : null;
 };

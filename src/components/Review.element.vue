@@ -205,8 +205,13 @@
 <script>
 import { OrbitControls } from "@tresjs/cientos";
 import { useWallet } from "solana-wallets-vue";
-import { createTree, compressNFT } from "../../library/src/mint";
-import { config } from "../../config";
+import {
+  createTree,
+  compressNFT,
+  createConnection,
+} from "../../library/src/mint";
+import { config as configLocal } from "../../config";
+import { Connection, Keypair, PublicKey, Transaction } from "@solana/web3.js";
 
 export default {
   mixins: [],
@@ -257,14 +262,23 @@ export default {
     },
     async mintAsset() {
       const local_data = this.getLocalConfig();
+      const rpc = local_data?.rpc ? local_data?.rpc : configLocal?.rpc;
+      const connection = createConnection(rpc);
       this.process_msg = "Uploading your assets to arweave...";
       this.loading = true;
       await this.sleep(5000);
 
       const { publicKey, sendTransaction } = useWallet();
       const payer = publicKey.value;
-      const tree = config.tree_address;
+      const tree = configLocal.tree_address;
       const creators = this.nft_data.wallets;
+
+      const options = {
+        arweave_rpc: local_data?.arweave_rpc
+          ? local_data?.arweave_rpc
+          : configLocal?.arweave_rpc,
+        rpc: local_data?.rpc ? local_data?.rpc : configLocal?.rpc,
+      };
 
       const meta_data = {
         name: this.nft_data.name,
@@ -274,13 +288,32 @@ export default {
         files: this.nft_data.file,
       };
 
+      /* Commented code is for creating a new merkle tree */
+      // const new_tree = await createTree({
+      //   payer: payer,
+      //   options: options,
+      // });
+
+      // const tree_signature = await sendTransaction(new_tree.tx, connection);
+      // let tree_sent = await connection.confirmTransaction(tree_signature, {
+      //   commitment: "confirmed",
+      // });
+
       const compressed = await compressNFT({
         payer: payer,
         tree: local_data.tree_address ? local_data.tree_address : tree,
         treeDelegate: payer,
         metadata: meta_data,
         creatorWallets: creators,
+        options: options,
       });
+
+      const signature = await sendTransaction(compressed.tx, connection);
+      const sent = await connection.confirmTransaction(signature, {
+        commitment: "confirmed",
+      });
+
+      compressed.upload(signature);
 
       this.process_msg = "Minting your NFT...";
       await this.sleep(5000);
