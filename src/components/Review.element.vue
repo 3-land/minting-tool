@@ -189,16 +189,14 @@
     />
   </div> -->
   <div v-if="loading" class="loader-container">
-    <span class="loader"></span>
-    <span
+    <div class="loader"></div>
+    <div
       style="
-        position: absolute;
-        top: 30%;
         color: white;
         font-size: 24px;
         font-weight: bolder;
       "
-      >{{ process_msg }}</span
+      >{{ process_msg }}</div
     >
   </div>
 </template>
@@ -373,7 +371,8 @@ body {
   justify-content: center;
 }
 .loader-container {
-  height: 891px;
+  gap:25px;
+  height: 100dvh;
   display: flex;
   background-color: rgb(30, 30, 30, 0.5);
   backdrop-filter: blur(5px);
@@ -383,14 +382,14 @@ body {
   bottom: 0px;
   top: 0px;
   width: 100dvw;
-
+flex-direction: column;
   justify-content: center;
-  /* align-items: center; */
+  align-items: center;
 }
 .loader {
   width: calc(100px - 24px);
   height: 50px;
-  top: 20%;
+  
   position: relative;
   animation: flippx 2s infinite linear;
 }

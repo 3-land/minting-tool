@@ -131,13 +131,17 @@ export default {
   z-index: 2;
   backdrop-filter: blur(5px);
   width: 100dvw;
+  display: flex;
+  height:100dvh;
+  justify-content: center;
+  align-items: center;
 }
 .config-container {
   width: 50%;
   display: flex;
   flex-direction: column;
   gap: 24px;
-  margin: 25%;
+  
 }
 .config-item-container {
   display: flex;
