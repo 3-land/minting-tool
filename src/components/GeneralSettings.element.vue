@@ -228,7 +228,7 @@ export default {
   emits: ["nft_data"],
   data() {
     return {
-      showTraits: true,
+      showTraits: false,
       openConfiguration: false,
 
       defaultPercentage: 5,
