@@ -2,15 +2,24 @@
 
 ## Description
 
-This is an open-source tool for minting compressed NFTs on the Solana blockchain. It provides a simple and efficient way to create, manage, and distribute compressed NFTs.
+Open Source tool for minting compressed NFTs on Solana.
 
-## Features
-*To-do Documentation*
+## UI Features
+- Images, Videos and 3D files supported
+- One single transaction to create the cNFT and upload the assets to Arweave
 
-## Installation
-*To-do Documentation*
+## Running the UI
+*To-do: How to run the UI on your computer*
+
+## SDK Features
+- Mint cNFT
+- Merkle Tree Creation
+
+## SDK Methods
+*To-do: SDK Available Methods*
 
 ## Contributing
+*To-do*
 
 ## License
 
