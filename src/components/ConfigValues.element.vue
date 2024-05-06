@@ -74,6 +74,7 @@ export default {
     },
     getLocalConfig() {
       let localConfig = localStorage.getItem("config");
+      console.log(localConfig);
 
       if (localConfig) {
         return JSON.parse(localConfig);
@@ -132,7 +133,7 @@ export default {
   backdrop-filter: blur(5px);
   width: 100dvw;
   display: flex;
-  height:100dvh;
+  height: 100dvh;
   justify-content: center;
   align-items: center;
 }
@@ -141,7 +142,6 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  
 }
 .config-item-container {
   display: flex;

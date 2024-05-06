@@ -113,11 +113,18 @@
       </div>
     </div>
     <div
-      v-if="error && input_type != 'number'"
+      v-if="error && input_type != 'number' && !address_error"
       style="color: red; display: flex; align-items: center"
     >
       <div class="alert-container" />
       Missing Field
+    </div>
+    <div
+      v-if="address_error"
+      style="color: red; display: flex; align-items: center"
+    >
+      <div class="alert-container" />
+      Address not Valid
     </div>
   </div>
 </template>
@@ -141,6 +148,7 @@ export default {
     max: { default: null },
     step: { default: null },
     error: { default: null },
+    address_error: { default: null },
     text_color: { default: null },
   },
   computed: {

@@ -163,6 +163,7 @@
               style="width: 45%"
               @update:value="handleCreator($event, index, 'address')"
               :error="missing.wallets[index]?.address ? false : true"
+              :address_error="validateAddress(index) && item.address != ''"
             />
             <div
               style="
@@ -222,6 +223,7 @@
 </template>
 <script>
 import { useWallet } from "solana-wallets-vue";
+import { validateSolAddress } from "../../library/src/utils";
 
 export default {
   mixins: [],
@@ -230,6 +232,7 @@ export default {
     return {
       showTraits: false,
       openConfiguration: false,
+      wrongAddress: [],
 
       defaultPercentage: 5,
       isReady: null,
@@ -255,6 +258,19 @@ export default {
     data: { default: null },
   },
   computed: {
+    validateAddress() {
+      this.value.wallets.map((wallet, index) => {
+        if (!validateSolAddress(wallet.address)) {
+          this.wrongAddress[index] = true;
+        } else {
+          this.wrongAddress[index] = false;
+        }
+      });
+
+      return (index) => {
+        return this.wrongAddress[index];
+      };
+    },
     getPublicKey() {
       const { publicKey } = useWallet();
       if (this.value.wallets[0].address != publicKey.value) {
@@ -263,9 +279,12 @@ export default {
       return publicKey.value;
     },
     hasFile() {
-      if (this.value?.file?.file != null || this.missing?.file?.file != null) {
+      if (this.value?.file?.file != null || this.missing?.file?.file != "") {
+        console.log("tru");
+
         return true;
       }
+      console.log("fols");
       return false;
     },
     hasCover() {
@@ -381,6 +400,16 @@ export default {
     },
     goToReview() {
       let canGo = true;
+
+      this.value.wallets.map((wallet, index) => {
+        if (!validateSolAddress(wallet.address)) {
+          this.wrongAddress[index] = true;
+          canGo = false;
+        } else {
+          this.wrongAddress[index] = false;
+        }
+      });
+
       for (const _value in this.value) {
         if (_value == "traits") {
           for (const _key in this.value.traits) {
