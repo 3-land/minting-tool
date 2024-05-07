@@ -190,14 +190,9 @@
   </div> -->
   <div v-if="loading" class="loader-container">
     <div class="loader"></div>
-    <div
-      style="
-        color: white;
-        font-size: 24px;
-        font-weight: bolder;
-      "
-      >{{ process_msg }}</div
-    >
+    <div style="color: white; font-size: 24px; font-weight: bolder">
+      {{ process_msg }}
+    </div>
   </div>
 </template>
 <script>
@@ -209,6 +204,7 @@ import {
   createConnection,
 } from "../../library/src/mint";
 import { config as configLocal } from "../../config";
+// import { getCNFtId } from "../../library/src/getcNftId";
 
 export default {
   mixins: [],
@@ -259,11 +255,19 @@ export default {
     },
     async mintAsset() {
       const local_data = this.getLocalConfig();
-      const rpc = local_data?.rpc ? local_data?.rpc : configLocal?.rpc;
+      const rpc = local_data?.data?.rpc
+        ? local_data.data?.rpc
+        : configLocal.data?.rpc;
       const connection = createConnection(rpc);
-      this.process_msg = "Uploading your assets to arweave...";
       this.loading = true;
-      await this.sleep(5000);
+      this.process_msg = "Preparing Files...";
+      await this.sleep(1000);
+
+      this.process_msg = "Reading the blockchain...";
+      await this.sleep(2000);
+
+      this.process_msg = "Waiting for Signature...";
+      await this.sleep(1000);
 
       const { publicKey, sendTransaction } = useWallet();
       const payer = publicKey.value;
@@ -271,10 +275,12 @@ export default {
       const creators = this.nft_data.wallets;
 
       const options = {
-        arweave_rpc: local_data?.arweave_rpc
-          ? local_data?.arweave_rpc
-          : configLocal?.arweave_rpc,
-        rpc: local_data?.rpc ? local_data?.rpc : configLocal?.rpc,
+        arweave_rpc: local_data?.data?.arweave_rpc
+          ? local_data?.data?.arweave_rpc
+          : configLocal?.data?.arweave_rpc,
+        rpc: local_data?.data?.rpc
+          ? local_data?.data?.rpc
+          : configLocal?.data?.rpc,
       };
 
       const meta_data = {
@@ -298,7 +304,9 @@ export default {
 
       const compressed = await compressNFT({
         payer: payer,
-        tree: local_data.tree_address ? local_data.tree_address : tree,
+        tree: local_data?.data.tree_address
+          ? local_data?.data.tree_address
+          : tree,
         treeDelegate: payer,
         metadata: meta_data,
         creatorWallets: creators,
@@ -306,9 +314,18 @@ export default {
       });
 
       const signature = await sendTransaction(compressed.tx, connection);
+
       const sent = await connection.confirmTransaction(signature, {
         commitment: "confirmed",
       });
+
+      // const cnft_id = await getCNFtId(sent);
+
+      // console.log("cnfg ID");
+      // console.log(cnft_id);
+
+      this.process_msg = "Confirming Transaction...";
+      await this.sleep(1000);
 
       compressed.upload(signature);
 
@@ -371,7 +388,7 @@ body {
   justify-content: center;
 }
 .loader-container {
-  gap:25px;
+  gap: 25px;
   height: 100dvh;
   display: flex;
   background-color: rgb(30, 30, 30, 0.5);
@@ -382,14 +399,14 @@ body {
   bottom: 0px;
   top: 0px;
   width: 100dvw;
-flex-direction: column;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 .loader {
   width: calc(100px - 24px);
   height: 50px;
-  
+
   position: relative;
   animation: flippx 2s infinite linear;
 }

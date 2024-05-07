@@ -280,11 +280,8 @@ export default {
     },
     hasFile() {
       if (this.value?.file?.file != null || this.missing?.file?.file != "") {
-        console.log("tru");
-
         return true;
       }
-      console.log("fols");
       return false;
     },
     hasCover() {

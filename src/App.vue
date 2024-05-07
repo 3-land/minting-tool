@@ -40,6 +40,8 @@ export default {
       this.edit = false;
     },
     uploadAsset(data) {
+      console.log(data);
+      console.log(data.file);
       this.minted = data.file;
     },
   },

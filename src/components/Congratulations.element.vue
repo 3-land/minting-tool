@@ -12,6 +12,7 @@
       <span style="width: 100%; font-size: 60px">Collectible</span>
       <span style="width: 100%; font-size: 24px">has been created!</span>
     </div>
+
     <div
       style="
         display: flex;
@@ -22,6 +23,18 @@
         gap: 24px;
       "
     >
+      <div style="display: flex; width: 100%; justify-content: space-evenly">
+        <ButtonBox
+          label="See Transaction"
+          style="padding: 8px 16px; width: auto"
+          @click="explore('tx', data.file.data.transaction)"
+        />
+        <ButtonBox
+          style="padding: 8px 16px; width: auto"
+          label="See cNFT"
+          @click="explore('token', data)"
+        />
+      </div>
       <div
         style="
           background-color: white;
@@ -92,6 +105,8 @@
   </div>
 </template>
 <script>
+import { config } from "../../config";
+import { getCNFtId } from "../../library/src/getcNftId";
 export default {
   mixins: [],
   data() {
@@ -109,6 +124,18 @@ export default {
     },
   },
   methods: {
+    explore(type, data) {
+      const netw =
+        config.network == "Custom"
+          ? config.data.rpc.includes("devnet")
+            ? "devnet"
+            : "mainnet"
+          : config.network;
+      window.open(
+        `https://xray.helius.xyz/${type}/${data}?network=${netw.toLocaleLowerCase()}`,
+        "_blank"
+      );
+    },
     checkFileType(file) {
       return file.type.includes("image")
         ? "image"
