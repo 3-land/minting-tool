@@ -1,6 +1,6 @@
 {
   "name": "@3land/minting",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "homepage": "https://open.3.land",
   "private": false,
   "type": "module",
@@ -11,8 +11,8 @@
     "preview": "vite preview"
   },
   "repository": {
-      "type": "git",
-      "url": "https://github.com/3-land/minting-tool.git"
+    "type": "git",
+    "url": "git+https://github.com/3-land/minting-tool.git"
   },
   "dependencies": {
     "@irys/sdk": "^0.1.15",
