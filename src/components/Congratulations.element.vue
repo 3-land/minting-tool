@@ -32,7 +32,7 @@
         <ButtonBox
           style="padding: 8px 16px; width: auto"
           label="See cNFT"
-          @click="explore('token', data)"
+          @click="explore('token', cnft)"
         />
       </div>
       <div
@@ -106,7 +106,7 @@
 </template>
 <script>
 import { config } from "../../config";
-import { getCNFtId } from "../../library/src/getcNftId";
+// import { getCNFtId } from "../../library/src/getcNftId";
 export default {
   mixins: [],
   data() {
@@ -114,6 +114,9 @@ export default {
   },
   props: {
     file: {
+      default: null,
+    },
+    cnft: {
       default: null,
     },
   },

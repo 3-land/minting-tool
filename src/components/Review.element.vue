@@ -204,7 +204,7 @@ import {
   createConnection,
 } from "../../library/src/mint";
 import { config as configLocal } from "../../config";
-// import { getCNFtId } from "../../library/src/getcNftId";
+import { getCNFtId } from "../../library/src/getcNftId";
 
 export default {
   mixins: [],
@@ -319,10 +319,7 @@ export default {
         commitment: "confirmed",
       });
 
-      // const cnft_id = await getCNFtId(sent);
-
-      // console.log("cnfg ID");
-      // console.log(cnft_id);
+      const cnft_id = await getCNFtId(signature, connection);
 
       this.process_msg = "Confirming Transaction...";
       await this.sleep(1000);
@@ -332,7 +329,7 @@ export default {
       this.process_msg = "Minting your NFT...";
       await this.sleep(5000);
 
-      this.$emit("mint", this.data);
+      this.$emit("mint", { asset: this.data, cnft: cnft_id.toString() });
     },
     sleep(ms) {
       return new Promise((resolve) => setTimeout(resolve, ms));

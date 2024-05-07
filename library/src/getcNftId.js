@@ -7,6 +7,11 @@ import {
     deserializeChangeLogEventV1
 } from "@solana/spl-account-compression";
 
+import { PublicKey } from '@solana/web3.js';
+
+import BN from "bn.js";
+
+
 
 function getAllChangeLogEventV1FromTransaction(
     txResponse,
@@ -53,9 +58,8 @@ const getAssetPDA = async (index, tree) => {
 };
 
 
-export async function getCNFtId(transactionInfo) {
-    // const connection = getConnection();
-    // const transactionInfo = await connection.getTransaction(confirmed, { commitment: "confirmed" });
+export async function getCNFtId(signature, connection) {
+    const transactionInfo = await connection.getTransaction(signature, { commitment: "confirmed" });
     const k = await getAllChangeLogEventV1FromTransaction(transactionInfo);
     const ids = [];
     if (k) {

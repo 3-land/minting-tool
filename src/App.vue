@@ -6,7 +6,12 @@
     @mint="uploadAsset"
     @edit="handleEdit"
   />
-  <Congratulations v-if="minted" v-model:file="nft.file" :file="minted" />
+  <Congratulations
+    v-if="minted"
+    v-model:file="nft.file"
+    :file="minted.asset.file"
+    :cnft="minted.cnft"
+  />
 </template>
 <script>
 export default {
@@ -40,9 +45,7 @@ export default {
       this.edit = false;
     },
     uploadAsset(data) {
-      console.log(data);
-      console.log(data.file);
-      this.minted = data.file;
+      this.minted = data;
     },
   },
 };
