@@ -328,6 +328,11 @@ export default {
 
       const cnft_id = await getCNFtId(signature, connection);
 
+      if (!cnft_id) {
+        alert("there was a problem");
+        return;
+      }
+
       // console.log(cnft_id.toLocaleString());
 
       this.process_msg = "Confirming Transaction...";
