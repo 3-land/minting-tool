@@ -30,11 +30,11 @@ export const createTree = async ({ payer, public_tree, options }) => {
     const merkleTreeKeypair = Keypair.generate();
     signers.push(merkleTreeKeypair);
 
-    const maxDepth = 15;
-    const maxBufferSize = 64;
+    const maxDepth = 5;
+    const maxBufferSize = 8;
 
     const maxDepthSizePair = { maxDepth, maxBufferSize };
-    const canopyDepth = 4;
+    const canopyDepth = 1;
 
 
     const allocTreeIx = await createAllocTreeIx(

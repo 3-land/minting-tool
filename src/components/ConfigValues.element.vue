@@ -52,7 +52,7 @@
         <InputBox
           id="arweave"
           :value="config.data?.arweave_rpc"
-          @update:value="inputChange($event, 'arweave')"
+          @update:value="inputChange($event, 'arweave_rpc')"
           ref="arweave"
           type="text"
           placeholder="Input your Arweave RPC"
@@ -88,6 +88,8 @@
 import {
   arweave_devnet_rpc,
   arweave_mainnet_rpc,
+  devnet_tree,
+  mainnet_tree,
   config as defaultConfig,
   solana_devnet_rpc,
   solana_mainnet_rpc,
@@ -103,7 +105,7 @@ export default {
   },
   methods: {
     inputChange(valor, name) {
-      this.config[name] = valor;
+      this.config.data[name] = valor;
       this.isChanged = true;
     },
     closeConfig() {
@@ -137,11 +139,13 @@ export default {
     networkChange() {
       if (this.picked === "Mainnet") {
         this.config.data.rpc = solana_mainnet_rpc;
+        this.config.data.tree_address = mainnet_tree;
         this.config.data.arweave_rpc = arweave_mainnet_rpc;
         this.$refs.rpc.$el.querySelector("input").disabled = true;
         this.$refs.arweave.$el.querySelector("input").disabled = true;
       } else if (this.picked === "Devnet") {
         this.config.data.rpc = solana_devnet_rpc;
+        this.config.data.tree_address = devnet_tree;
         this.config.data.arweave_rpc = arweave_devnet_rpc;
         this.$refs.rpc.$el.querySelector("input").disabled = true;
         this.$refs.arweave.$el.querySelector("input").disabled = true;

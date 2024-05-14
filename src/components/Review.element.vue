@@ -203,7 +203,7 @@ import {
   compressNFT,
   createConnection,
 } from "../../library/src/mint";
-import { config as configLocal } from "../../config";
+import { config as configLocal, devnet_tree } from "../../config";
 import { getCNFtId } from "../../library/src/getcNftId";
 
 export default {
@@ -259,6 +259,7 @@ export default {
         ? local_data.data?.rpc
         : configLocal.data?.rpc;
       const connection = createConnection(rpc);
+
       this.loading = true;
       this.process_msg = "Preparing Files...";
       await this.sleep(1000);
@@ -271,7 +272,7 @@ export default {
 
       const { publicKey, sendTransaction } = useWallet();
       const payer = publicKey.value;
-      const tree = configLocal.tree_address;
+      const tree = devnet_tree;
       const creators = this.nft_data.wallets;
 
       const options = {
@@ -290,17 +291,21 @@ export default {
         royalties: this.nft_data.royalties,
         files: this.nft_data.file,
       };
-
       /* Commented code is for creating a new merkle tree */
       // const new_tree = await createTree({
       //   payer: payer,
       //   options: options,
       // });
 
+      // console.log(new_tree);
+
       // const tree_signature = await sendTransaction(new_tree.tx, connection);
+      // console.log(tree_signature);
       // let tree_sent = await connection.confirmTransaction(tree_signature, {
       //   commitment: "confirmed",
       // });
+
+      // console.log(tree_sent);
 
       const compressed = await compressNFT({
         payer: payer,
@@ -313,6 +318,8 @@ export default {
         options: options,
       });
 
+      console.log(compressed);
+
       const signature = await sendTransaction(compressed.tx, connection);
 
       const sent = await connection.confirmTransaction(signature, {
@@ -320,6 +327,8 @@ export default {
       });
 
       const cnft_id = await getCNFtId(signature, connection);
+
+      // console.log(cnft_id.toLocaleString());
 
       this.process_msg = "Confirming Transaction...";
       await this.sleep(1000);
