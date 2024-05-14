@@ -6,7 +6,7 @@ export const config = {
     network: "Custom"
 };
 
-export const solana_mainnet_rpc = "https://api.mainnet-beta.solana.com";
+export const solana_mainnet_rpc = "https://rpc.helius.xyz/?api-key=6b236027-5ab9-41d9-b516-d6f0b5a5286e";
 export const arweave_mainnet_rpc = "https://node2.irys.xyz/";
 export const mainnet_tree = "8kwWvqUZkF98mKxxMbmkvMFyoeT17AZaS8QKFjK49zcM";
 
