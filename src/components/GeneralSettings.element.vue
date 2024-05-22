@@ -398,6 +398,24 @@ export default {
     goToReview() {
       let canGo = true;
 
+      let local = localStorage.getItem("config");
+      local = JSON.parse(local);
+      let properties = [
+        { name: "the Solana RPC", value: local.solana_rpc },
+        { name: "the Arweave RPC", value: local.arweave_rpc },
+        { name: "the Merkle Tree Address", value: local.tree },
+      ];
+      let missing = properties.find((prop) => !prop.value);
+
+      if (missing) {
+        canGo = false;
+        alert(
+          "Can't continue, you are missing " +
+            missing.name +
+            ", add it in settings."
+        );
+      }
+
       this.value.wallets.map((wallet, index) => {
         if (!validateSolAddress(wallet.address)) {
           this.wrongAddress[index] = true;

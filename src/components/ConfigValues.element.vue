@@ -38,8 +38,8 @@
         <div style="color: white">Solana RPC</div>
         <InputBox
           id="rpc"
-          :value="config?.data?.rpc"
-          @update:value="inputChange($event, 'rpc')"
+          :value="config?.solana_rpc"
+          @update:value="inputChange($event, 'solana_rpc')"
           ref="rpc"
           type="text"
           placeholder="Input your RPC"
@@ -51,7 +51,7 @@
         <div style="color: white">Arweave RPC</div>
         <InputBox
           id="arweave"
-          :value="config.data?.arweave_rpc"
+          :value="config.arweave_rpc"
           @update:value="inputChange($event, 'arweave_rpc')"
           ref="arweave"
           type="text"
@@ -64,8 +64,8 @@
         <div style="color: white">Merkle Tree</div>
         <InputBox
           id="tree_address"
-          :value="config.data?.tree_address"
-          @update:value="inputChange($event, 'tree_address')"
+          :value="config?.tree"
+          @update:value="inputChange($event, 'tree')"
           ref="tree_address"
           type="text"
           placeholder="Input your Tree Address"
@@ -105,7 +105,7 @@ export default {
   },
   methods: {
     inputChange(valor, name) {
-      this.config.data[name] = valor;
+      this.config[name] = valor;
       this.isChanged = true;
     },
     closeConfig() {
@@ -126,11 +126,9 @@ export default {
     },
     updateAllConfigs() {
       const new_config = {
-        data: {
-          tree_address: this.config.data.tree_address,
-          rpc: this.config.data.rpc,
-          arweave_rpc: this.config.data.arweave_rpc,
-        },
+        tree: this.config.tree,
+        solana_rpc: this.config.solana_rpc,
+        arweave_rpc: this.config.arweave_rpc,
         network: this.picked,
       };
       localStorage.setItem("config", JSON.stringify(new_config));
@@ -138,20 +136,21 @@ export default {
     },
     networkChange() {
       if (this.picked === "Mainnet") {
-        this.config.data.rpc = solana_mainnet_rpc;
-        this.config.data.tree_address = mainnet_tree;
-        this.config.data.arweave_rpc = arweave_mainnet_rpc;
+        this.config.solana_rpc = solana_mainnet_rpc;
+        this.config.tree = mainnet_tree;
+        this.config.arweave_rpc = arweave_mainnet_rpc;
         this.$refs.rpc.$el.querySelector("input").disabled = true;
         this.$refs.arweave.$el.querySelector("input").disabled = true;
       } else if (this.picked === "Devnet") {
-        this.config.data.rpc = solana_devnet_rpc;
-        this.config.data.tree_address = devnet_tree;
-        this.config.data.arweave_rpc = arweave_devnet_rpc;
+        this.config.solana_rpc = solana_devnet_rpc;
+        this.config.tree = devnet_tree;
+        this.config.arweave_rpc = arweave_devnet_rpc;
         this.$refs.rpc.$el.querySelector("input").disabled = true;
         this.$refs.arweave.$el.querySelector("input").disabled = true;
       } else if (this.picked === "Custom") {
-        this.config.data.rpc = defaultConfig.data.rpc;
-        this.config.data.arweave_rpc = defaultConfig.data.arweave_rpc;
+        this.config.solana_rpc = defaultConfig.data.rpc;
+        this.config.tree = mainnet_tree;
+        this.config.arweave_rpc = defaultConfig.data.arweave_rpc;
         this.$refs.rpc.$el.querySelector("input").disabled = false;
         this.$refs.arweave.$el.querySelector("input").disabled = false;
       }

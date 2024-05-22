@@ -203,7 +203,7 @@ import {
   compressNFT,
   createConnection,
 } from "../../library/src/mint";
-import { config as configLocal, devnet_tree } from "../../config";
+import { devnet_tree } from "../../config";
 import { getCNFtId } from "../../library/src/getcNftId";
 
 export default {
@@ -248,27 +248,22 @@ export default {
       let localConfig = localStorage.getItem("config");
       if (localConfig) {
         return JSON.parse(localConfig);
-      } else {
-        localStorage.setItem("config", JSON.stringify(defaultConfig));
-        return defaultConfig;
       }
     },
     async mintAsset() {
       const local_data = this.getLocalConfig();
-      const rpc = local_data?.data?.rpc
-        ? local_data.data?.rpc
-        : configLocal.data?.rpc;
+      const rpc = local_data?.solana_rpc;
       const connection = createConnection(rpc);
 
       this.loading = true;
       this.process_msg = "Preparing Files...";
-      await this.sleep(1000);
+      await this.sleep(500);
 
       this.process_msg = "Reading the blockchain...";
-      await this.sleep(2000);
+      await this.sleep(1000);
 
       this.process_msg = "Waiting for Signature...";
-      await this.sleep(1000);
+      await this.sleep(500);
 
       const { publicKey, sendTransaction } = useWallet();
       const payer = publicKey.value;
@@ -276,12 +271,8 @@ export default {
       const creators = this.nft_data.wallets;
 
       const options = {
-        arweave_rpc: local_data?.data?.arweave_rpc
-          ? local_data?.data?.arweave_rpc
-          : configLocal?.data?.arweave_rpc,
-        rpc: local_data?.data?.rpc
-          ? local_data?.data?.rpc
-          : configLocal?.data?.rpc,
+        arweave_rpc: local_data?.arweave_rpc,
+        rpc: local_data?.solana_rpc,
       };
 
       const meta_data = {
@@ -306,19 +297,24 @@ export default {
       // });
 
       // console.log(tree_sent);
+      let compressed;
 
-      const compressed = await compressNFT({
-        payer: payer,
-        tree: local_data?.data.tree_address
-          ? local_data?.data.tree_address
-          : tree,
-        treeDelegate: payer,
-        metadata: meta_data,
-        creatorWallets: creators,
-        options: options,
-      });
-
-      console.log(compressed);
+      try {
+        compressed = await compressNFT({
+          payer: payer,
+          tree: local_data?.tree ? local_data?.tree : tree,
+          treeDelegate: payer,
+          metadata: meta_data,
+          creatorWallets: creators,
+          options: options,
+        });
+      } catch (error) {
+        alert(error);
+        alert(
+          "Looks like you are rate limited by the default Solana RPC, try using a custom RPC, get one at helius.xyz ."
+        );
+        location.reload();
+      }
 
       const signature = await sendTransaction(compressed.tx, connection);
 
@@ -327,21 +323,22 @@ export default {
       });
 
       const cnft_id = await getCNFtId(signature, connection);
-
-      if (!cnft_id) {
-        alert("there was a problem");
-        return;
+      if (cnft_id.length < 1) {
+        alert(
+          "There was a problem, check your configuration (RPCs and Merkle Tree)."
+        );
+        location.reload();
       }
 
       // console.log(cnft_id.toLocaleString());
 
       this.process_msg = "Confirming Transaction...";
-      await this.sleep(1000);
+      await this.sleep(500);
 
       compressed.upload(signature);
 
       this.process_msg = "Minting your NFT...";
-      await this.sleep(5000);
+      await this.sleep(500);
 
       this.$emit("mint", { asset: this.data, cnft: cnft_id.toString() });
     },

@@ -14,6 +14,16 @@
   />
 </template>
 <script>
+import {
+  arweave_devnet_rpc,
+  arweave_mainnet_rpc,
+  devnet_tree,
+  mainnet_tree,
+  solana_devnet_rpc,
+  solana_mainnet_rpc,
+  config as defaultConfig,
+} from "../config";
+
 export default {
   mixins: [],
   data() {
@@ -36,6 +46,26 @@ export default {
       if (this.nft != null && this.edit != false) return true;
       return false;
     },
+  },
+  mounted() {
+    let config = JSON.parse(localStorage.getItem("config"));
+    if (!config) {
+      config = {};
+    }
+    if (defaultConfig.network === "Mainnet") {
+      config.solana_rpc = solana_mainnet_rpc;
+      config.arweave_rpc = arweave_mainnet_rpc;
+      config.tree = mainnet_tree;
+      config.network = "Mainnet";
+    } else if (defaultConfig.network === "Devnet") {
+      config.solana_rpc = solana_devnet_rpc;
+      config.arweave_rpc = arweave_devnet_rpc;
+      config.tree = devnet_tree;
+      config.network = "Devnet";
+    }
+    if (config) {
+      localStorage.setItem("config", JSON.stringify(config));
+    }
   },
   methods: {
     manageNft(data) {

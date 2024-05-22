@@ -128,16 +128,29 @@ export default {
   },
   methods: {
     explore(type, data) {
+      let localConfig = localStorage.getItem("config");
+      localConfig = JSON.parse(localConfig);
+
+      console.log(localConfig);
+
       const netw =
-        config.network == "Custom"
-          ? config.data.rpc.includes("devnet")
+        localConfig.network == "Custom"
+          ? localConfig.solana_rpc.includes("devnet")
             ? "devnet"
             : "mainnet"
-          : config.network;
-      window.open(
-        `https://xray.helius.xyz/${type}/${data}?network=${netw.toLocaleLowerCase()}`,
-        "_blank"
-      );
+          : localConfig.network;
+      console.log("newt", netw);
+      if (type == "token") {
+        window.open(
+          `https://solscan.io/${type}/${data}?cluster=${netw.toLocaleLowerCase()}`,
+          "_blank"
+        );
+      } else if (type == "tx") {
+        window.open(
+          `https://xray.helius.xyz/${type}/${data}?network=${netw.toLocaleLowerCase()}`,
+          "_blank"
+        );
+      }
     },
     checkFileType(file) {
       return file.type.includes("image")
