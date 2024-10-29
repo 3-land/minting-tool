@@ -71,7 +71,7 @@ export const createTree = async ({ payer, public_tree, options }) => {
     const tx = new Transaction();
     tx.add(...instructions);
 
-    tx.recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
+    tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
     tx.feePayer = payer;
     tx.partialSign(...signers);
     return { tx }
@@ -212,7 +212,7 @@ export const compressNFT = async ({ payer, tree, treeDelegate, metadata, creator
 
     const tx = new Transaction();
     tx.add(...irys_ix.instructions, ...instructions);
-    tx.recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
+    tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
     tx.feePayer = payer;
     tx.partialSign(...signers);
 
